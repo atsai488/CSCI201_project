@@ -20,7 +20,7 @@ export default function CustomFileInput() {
         }
     }
     return (
-        <div className="col mb-3">
+        <div className="col-3 mb-3">
             <input 
                 type="file" 
                 id='images'
