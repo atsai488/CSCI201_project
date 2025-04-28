@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Listings</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"
+  />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-text">
+      USC Marketplace
+    </div>
+    <div class="nav-icons">
+      <i id="addIcon" class="fa fa-plus"></i>
+      <i id="messageIcon" class="fa fa-comment"></i>
+      <div class="profile-container">
+        <i id="profileIcon" class="fa fa-user"></i>
+        <div id="profileDropdown" class="dropdown">
+          <ul>
+            <li id="goToProfile"><i class="fa fa-user-circle"></i>Go to Profile</li>
+            <li id="logout"><i class="fa fa-sign-out-alt"></i>Logout</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="search-container">
+      <form id="searchForm">
+        <div class="search-input-wrapper">
+          <i class="fa fa-search"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="What are you looking for?"
+            required
+          />
+        </div>
+      </form>
+    </div>
+    <h1 id="listingsHeading">Listings for “ ”</h1>
+    <div id="listingsGrid" class="grid">
+      <div class="listing-item"></div>
+      <div class="listing-item"></div>
+      <div class="listing-item"></div>
+      <div class="listing-item"></div>
+    </div>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
