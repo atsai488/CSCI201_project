@@ -41,7 +41,7 @@ export default function CustomFileInput() {
             >
                 {!imageSrc && <span> + </span>}   
             </div>
-            <div className="invalid-feedback py-2">
+            <div className="invalid-feedback py-2 text-center">
                 Please provide a image for your product
             </div>
             <div className="valid-feedback py-2">

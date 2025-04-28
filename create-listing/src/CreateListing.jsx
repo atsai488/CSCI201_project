@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CustomFileInput from './CustomFileInput';
+import './CreateListing.css'
 
 export default function CreateListing() {
 
@@ -11,16 +12,28 @@ export default function CreateListing() {
         e.target.classList.add("was-validated")
     }
     return (
-        <div className='bg-light'>
+        <div>
             <nav className="navbar mb-3 mt-2">
-                <div className="container-md bg-body-secondary rounded-3 py-1 ps-4">
-                    <span className="navbar-brand my-1 h1 fs-4"><strong>Add New Product </strong></span>
+                <div 
+                    className="container-md rounded-3 py-1 ps-4"
+                    style={{
+                        backgroundColor: "#990000",
+                    }}
+                >
+                    <span 
+                        className="navbar-brand my-1 h1 fs-4"
+                        style={{color: "#FFCC00"}}
+                    >   
+                        <strong>Add New Product </strong>
+                    </span>
                 </div>
             </nav>
             <div className="container ps-4 rounded-4">
                 <div className='col-3 mb-3'>
-                    <h2 className='fs-5 mb-2'><strong>Product Information</strong></h2>
-                    <hr className='border-3 mt-1' />
+                    <h2 className='fs-5 mb-2'style={{color: "#990000"}}>
+                        <strong>Product Information</strong>
+                    </h2>
+                    <hr className='border-4 mt-1' style={{borderColor: "#FFCC00"}}/>
                 </div>
                 <form
                     action="confirmation"
@@ -127,8 +140,10 @@ export default function CreateListing() {
                         </div>
                     </div>
                     <div className='col-3 mb-3'>
-                        <h2 className='fs-5 mb-2'><strong>Product Images </strong></h2>
-                        <hr className='border-3 mt-1' />
+                        <h2 className='fs-5 mb-2' style={{color: "#990000"}}>
+                            <strong>Product Images </strong>
+                        </h2>
+                        <hr className='border-4 mt-1' style={{borderColor: "#FFCC00"}} />
                     </div>
                     <div className="col-9 mb-3">
                         <div className="row gap-3">
@@ -138,7 +153,14 @@ export default function CreateListing() {
                         </div>
                     </div>
                     <div className='d-flex justify-content-start'>
-                        <button type="submit" className="btn btn-primary mb-3 fs-6 py-2 px-4"> Create New Listing </button>
+                        <button 
+                            type="submit" 
+                            className="btn mb-3 fs-6 py-2 px-4"
+                            style={{
+                                backgroundColor: "#990000",
+                                color: "#FFCC00"
+                            }}
+                        ><strong> Create New Listing</strong></button>
                     </div>
                 </form>
             </div>
