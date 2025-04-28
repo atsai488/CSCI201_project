@@ -13,15 +13,15 @@ export default function CreateListing() {
     }
     return (
         <div>
-            <nav className="navbar mb-3 mt-2">
+            <nav className="navbar navbar-expand-lg mb-3 pt-0">
                 <div 
-                    className="container-md rounded-3 py-1 ps-4"
+                    className="container-fluid px-4"
                     style={{
                         backgroundColor: "#990000",
                     }}
                 >
                     <span 
-                        className="navbar-brand my-1 h1 fs-4"
+                        className="navbar-brand fs-4"
                         style={{color: "#FFCC00"}}
                     >   
                         <strong>Add New Product </strong>
@@ -50,6 +50,7 @@ export default function CreateListing() {
                             className="form-control rounded-3"
                             id="name"
                             name="productName"
+                            placeholder='Make it easy to find by including descriptive keywords'
                             autoComplete='off'
                             required
                         />
@@ -72,7 +73,7 @@ export default function CreateListing() {
                                     id='price'
                                     name='price'
                                     className='form-control'
-                                    placeholder='$'
+                                    placeholder='0.00'
                                     pattern="^\d+(\.\d{1,2})?$"
                                     required
                                 />
