@@ -16,9 +16,7 @@ export default function CreateListing() {
             <nav className="navbar navbar-expand-lg mb-3 pt-0">
                 <div 
                     className="container-fluid px-4"
-                    style={{
-                        backgroundColor: "#990000",
-                    }}
+                    style={{backgroundColor: "#990000"}}
                 >
                     <span 
                         className="navbar-brand fs-4"
@@ -44,7 +42,10 @@ export default function CreateListing() {
                     noValidate
                 >
                     <div className="mb-3 col-lg-7 col-md-8 col-sm-12">
-                        <label htmlFor="name" className="form-label fs-6"> Product Name<span className='text-danger'>*</span></label>
+                        <label htmlFor="name" className="form-label fs-6"> 
+                            Product Name
+                            <span className='text-danger'>*</span>
+                        </label>
                         <input
                             type="text"
                             className="form-control rounded-3"
@@ -154,14 +155,9 @@ export default function CreateListing() {
                         </div>
                     </div>
                     <div className='d-flex justify-content-start'>
-                        <button 
-                            type="submit" 
-                            className="btn mb-3 fs-6 py-2 px-4"
-                            style={{
-                                backgroundColor: "#990000",
-                                color: "#FFCC00"
-                            }}
-                        ><strong> Create New Listing</strong></button>
+                        <button type="submit" id='custom-btn'className="btn mb-3 fs-6 py-2 px-4 fw-bold">
+                            Create New Listing
+                        </button>
                     </div>
                 </form>
             </div>
