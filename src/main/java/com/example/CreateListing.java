@@ -50,12 +50,13 @@ public class CreateListing extends HttpServlet {
 		
 		// Retrieving variables to verify log in
 		String name = request.getParameter("name");
-		String price = request.getParameter("price");
+		float price = Float.valueOf(request.getParameter("price"));
 		String category = request.getParameter("category");
 		String description = request.getParameter("description");
 		String image1 = request.getParameter("image1");
 		String image2 = request.getParameter("image2");
 		String image3 = request.getParameter("image3");
+		int sellerID = Integer.valueOf(request.getParameter("sellerID"));
 		PrintWriter out = response.getWriter();
 		
 		Connection conn = null;
@@ -66,16 +67,15 @@ public class CreateListing extends HttpServlet {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			
-			ps = conn.prepareStatement("INSERT INTO Product (product_name, price, descript, thumbnail, image1, image2, tag, sellerID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			ps = conn.prepareStatement("INSERT INTO Product (product_name, price, descript, image1, image2, image3, category, sellerID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, name);
-			ps.setString(2, price);
+			ps.setFloat(2, price);
 			ps.setString(3, description);
 			ps.setString(4, image1);
 			ps.setString(5, image2);
 			ps.setString(6, image3);
 			ps.setString(7, category);
-			ps.setInt(8, 1); //Change to sellerID later
+			ps.setInt(8, sellerID); 
 			ps.executeUpdate();
 			
 			out.println("{\"status\": 200}");

@@ -47,6 +47,7 @@ export default function CreateListing() {
         data.append('image1', formData.image1)
         data.append('image2', formData.image2)
         data.append('image3', formData.image3)
+        data.append('sellerID', localStorage.getItem('userID')) // TODO Change to session storage of user ID
         
         try {
             const response = await fetch("/create-listing-servlet", {
