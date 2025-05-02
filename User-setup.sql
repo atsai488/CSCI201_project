@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS uscmarketplace;
+USE uscmarketplace;
+
+DROP TABLE IF EXISTS Users;
+
+CREATE TABLE Users (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	fname VARCHAR(255) NOT NULL,
+    lname VARCHAR(255) NOT NULL,
+	email VARCHAR(255) UNIQUE NOT NULL,
+	password VARCHAR(255) NOT NULL,
+    role ENUM('buyer', 'seller') NOT NULL 
+);
