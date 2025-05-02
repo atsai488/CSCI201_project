@@ -61,10 +61,10 @@ public class SearchListings extends HttpServlet {
 			ps.setString(1, sql);
             rs = ps.executeQuery();
             
-            Listing[] listings = new Listing[12];
+            ListingItem[] listings = new ListingItem[12];
             int i = 0;
             while (rs.next()) {
-                Listing listing = new Listing(
+            	ListingItem listing = new ListingItem(
                         rs.getInt("id"),
                         rs.getString("product_name"),
                         rs.getFloat("price"),
@@ -118,7 +118,7 @@ public class SearchListings extends HttpServlet {
 	}
 }
 
-class Listing{
+class ListingItem{
     public int id;
     public String product_name;
     public float price;
@@ -127,7 +127,7 @@ class Listing{
     public int sellerId;
     public String category;
 
-    public Listing(int id, String product_name, float price, String description, String image1, int sellerId) {
+    public ListingItem(int id, String product_name, float price, String description, String image1, int sellerId) {
         this.id = id;
         this.product_name = product_name;
         this.price = price;
