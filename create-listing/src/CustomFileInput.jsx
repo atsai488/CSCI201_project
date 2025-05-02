@@ -3,7 +3,7 @@ import './CustomFileInput.css'
 
 import { useRef, useState } from 'react';
 
-export default function CustomFileInput() {
+export default function CustomFileInput(props) {
     const inputFile = useRef(null)
     const [imageSrc, setImageSrc] = useState(null)
     
@@ -14,10 +14,9 @@ export default function CustomFileInput() {
     function handleFileChange (e) {
         const file = e.target.files[0]
         if (file) {
-          const reader = new FileReader()
-          reader.onloadend = () => setImageSrc(reader.result)
-          reader.readAsDataURL(file)
+            setImageSrc(URL.createObjectURL(file))
         }
+        props.onChange(file)
     }
     return (
         <div className="col-3 mb-3">
@@ -44,7 +43,7 @@ export default function CustomFileInput() {
             <div className="invalid-feedback py-2 text-center">
                 Please provide a image for your product
             </div>
-            <div className="valid-feedback py-2">
+            <div className="valid-feedback py-2 text-center">
                 Looks good!
             </div>
         </div>
