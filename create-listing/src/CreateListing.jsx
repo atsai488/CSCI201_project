@@ -49,7 +49,7 @@ export default function CreateListing() {
         data.append('image3', formData.image3)
         
         try {
-            const response = await fetch("/addListing", {
+            const response = await fetch("/create-listing-servlet", {
                 method: "POST",
                 body: data
             })
