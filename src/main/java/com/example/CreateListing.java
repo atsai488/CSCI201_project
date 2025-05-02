@@ -56,7 +56,7 @@ public class CreateListing extends HttpServlet {
 		String image1 = request.getParameter("image1");
 		String image2 = request.getParameter("image2");
 		String image3 = request.getParameter("image3");
-		int sellerID = Integer.valueOf(request.getParameter("sellerID"));
+		String email = request.getParameter("userEmail");
 		PrintWriter out = response.getWriter();
 		
 		Connection conn = null;
@@ -67,6 +67,19 @@ public class CreateListing extends HttpServlet {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
+			// Get sellerID
+			ps = conn.prepareStatement("SELECT SID FROM Users WHERE email = ?");
+			ps.setString(1, email);
+			rs = ps.executeQuery();
+			int sellerID = -1;
+			if (rs.next()) {
+				sellerID = rs.getInt("userID");
+			} else {
+				out.println("{\"error\": \"An error occurred.\"}");
+				return;
+			}
+
+			// Insert product
 			ps = conn.prepareStatement("INSERT INTO Product (product_name, price, descript, image1, image2, image3, category, sellerID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			ps.setString(1, name);
 			ps.setFloat(2, price);
