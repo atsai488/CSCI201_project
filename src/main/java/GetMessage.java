@@ -1,0 +1,160 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Array;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.Comparator;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+@WebServlet("/get-conversation-servlet")
+public class GetMessage extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	
+	@Value("${spring.datasource.url}")
+	private String db;
+	
+	@Value("${spring.datasource.username}")
+	private String dbUsername;
+	
+	@Value("${spring.datasource.password}")
+	private String dbPassword;
+       
+    public GetMessage() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String senderID = request.getParameter("yourUserID");
+		String receiverID = request.getParameter("otherUserID");
+		PrintWriter out = response.getWriter();
+		
+		Connection conn = null;
+		Statement st = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
+			String sql = "SELECT message, timeStamp FROM Messages WHERE senderID = ? AND receiverID = ?";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, Integer.parseInt(senderID));
+			ps.setInt(2, Integer.parseInt(receiverID));
+			rs = ps.executeQuery();
+			PriorityQueue<Message> messageHeap = new PriorityQueue<Message>(new Comparator<Message>() {
+				@Override
+				public int compare(Message m1, Message m2) {
+					Timestamp t1 = Timestamp.valueOf(m1.getTimestamp());
+					Timestamp t2 = Timestamp.valueOf(m2.getTimestamp());
+					return t1.compareTo(t2);
+				}
+			});
+		
+			while (rs.next()) {
+				Message message = new Message(rs.getString("message"), Integer.parseInt(senderID), rs.getString("timeStamp"));
+				messageHeap.add(message);
+			}
+			
+			//now get messages that were sent to the senderID from the receiverID
+			sql = "SELECT message, timeStamp FROM Messages WHERE receiverID = ? AND senderID = ?";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, Integer.parseInt(senderID));
+			ps.setInt(2, Integer.parseInt(receiverID));
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Message message = new Message(rs.getString("message"), Integer.parseInt(senderID), rs.getString("timeStamp"));
+				messageHeap.add(message);
+			}
+
+			//get messages in order of timestamp
+			String lastMessage = "";
+			ArrayList<String> messageList = new ArrayList<>();
+			while (!messageHeap.isEmpty()) {
+				Message message = messageHeap.poll();
+				String jsonMessage = "{\"message\": \"" + message.getText() + "\", \"senderID\": \"" + message.getSenderId() + "\", \"timestamp\": \"" + message.getTimestamp() + "\"}";
+				messageList.add(jsonMessage);
+				lastMessage = message.getText();
+			}
+			String jsonArray = String.join(",", messageList);
+			String jsonResponse = String.format("{\"conversation\": [%s], \"lastMessage\": \"%s\"}", jsonArray, lastMessage);
+
+			// Send the response
+			out.write(jsonResponse);
+			out.flush();
+			
+		} catch (SQLException sqle) {
+			out.write("{\"error\": \"" + sqle.getMessage() + "\"}");
+			out.flush();
+		} catch (ClassNotFoundException e) {
+			out.write("{\"error\": \"" + e.getMessage() + "\"}");
+			out.flush();
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (st != null) {
+					st.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException sqle) {
+				System.out.println("sqle: " + sqle.getMessage());
+			}
+		}
+	
+
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+}
+
+class Message {
+	private String text;
+	private int senderId;
+	private String timestamp;
+	
+	public Message(String text, int senderId, String timestamp) {
+		this.text = text;
+		this.senderId = senderId;
+		this.timestamp = timestamp;
+	}
+	
+	public String getText() {
+		return text;
+	}
+	
+	public int getSenderId() {
+		return senderId;
+	}
+	
+	public String getTimestamp() {
+		return timestamp;
+	}
+}

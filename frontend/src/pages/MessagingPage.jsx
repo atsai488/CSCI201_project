@@ -37,56 +37,48 @@ const dummyMessages = {
     {
       text: "Hey, is this still available?",
       senderId: 1,
-      timestamp: "10:30 AM",
-      senderProfilePic: "https://i.pravatar.cc/40?img=1"
+      timestamp: "10:30 AM"
     },
     {
       text: "Yes, it is!",
       senderId: 2,
-      timestamp: "10:31 AM",
-      senderProfilePic: "https://i.pravatar.cc/40?img=3"
+      timestamp: "10:31 AM"
     },
     {
       text: "Cool, let me know when you're free!",
       senderId: 1,
-      timestamp: "10:32 AM",
-      senderProfilePic: "https://i.pravatar.cc/40?img=1"
+      timestamp: "10:32 AM"
     }
   ],
   2: [
     {
       text: "Appreciate the help!",
       senderId: 3,
-      timestamp: "Yesterday",
-      senderProfilePic: "https://i.pravatar.cc/40?img=4"
+      timestamp: "Yesterday"
     },
     {
       text: "No problem, let me know if you have questions.",
       senderId: 1,
-      timestamp: "Yesterday",
-      senderProfilePic: "https://i.pravatar.cc/40?img=1"
+      timestamp: "Yesterday"
     }
   ],
   3: [
     {
       text: "Hey! I'm interested in the listing.",
       senderId: 4,
-      timestamp: "Today, 9:00 AM",
-      senderProfilePic: "https://i.pravatar.cc/40?img=5"
+      timestamp: "Today, 9:00 AM"
     },
     {
       text: "?",
       senderId: 4,
-      timestamp: "Today, 9:05 AM",
-      senderProfilePic: "https://i.pravatar.cc/40?img=5"
+      timestamp: "Today, 9:05 AM"
     }
   ],
   4: [
     {
       text: "Is it still available?",
       senderId: 5,
-      timestamp: "Today, 11:00 AM",
-      senderProfilePic: "https://i.pravatar.cc/40?img=6"
+      timestamp: "Today, 11:00 AM"
     }
   ]
 };
@@ -103,8 +95,7 @@ export default function MessagingPage() {
       const newMsg = {
         text: messageText.trim(),
         senderId: YOUR_USER_ID,
-        timestamp: "Just now",
-        senderProfilePic: "https://i.pravatar.cc/40?img=1"
+        timestamp: "Just now"
       };
 
       setMessages(prev => ({
