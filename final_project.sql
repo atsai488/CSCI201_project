@@ -24,19 +24,9 @@ create table Product(
     foreign key (sellerID) references Users(SID)
 );
 
-create table Conversation(
-    id int auto_increment primary key,
-    user1ID int not null,
-    user2ID int not null,
-    unread bool not null,
-    listing_name varchar(50) not null,
-    foreign key (user1ID) references Users(SID),
-    foreign key (user2ID) references Users(SID)
-);
-
 create table Messages (
     id int auto_increment primary key,
-    Text text not null,
+    message text not null,
     SenderID int not null,
     ReceiverID int not null,
     timeStamp datetime not null,
