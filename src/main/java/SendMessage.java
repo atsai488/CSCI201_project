@@ -63,7 +63,7 @@ public class SendMessage extends HttpServlet {
 
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			String sql = "INSERT INTO Messages (message, senderID, receiverID, timestamp) VALUES (?, ?, ?, ?)";			
+			String sql = "INSERT INTO Messages (message, senderID, receiverID, timestamp) VALUES (?, ?, ?, ?);";			
 			ps = conn.prepareStatement(sql);
 			
 			ps.setString(1, message);

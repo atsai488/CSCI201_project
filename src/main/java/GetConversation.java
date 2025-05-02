@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Comparator;
+import java.util.HashSet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,8 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@WebServlet("/get-messages-servlet")
-public class GetMessage extends HttpServlet {
+@WebServlet("/get-conversation-servlet")
+public class GetConversation extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	@Value("${spring.datasource.url}")
@@ -37,7 +38,7 @@ public class GetMessage extends HttpServlet {
 	@Value("${spring.datasource.password}")
 	private String dbPassword;
        
-    public GetMessage() {
+    public GetConversation() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -45,7 +46,6 @@ public class GetMessage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String senderID = request.getParameter("yourUserID");
-		String receiverID = request.getParameter("otherUserID");
 		PrintWriter out = response.getWriter();
 		
 		Connection conn = null;
@@ -55,49 +55,36 @@ public class GetMessage extends HttpServlet {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			String sql = "SELECT message, timeStamp FROM Messages WHERE senderID = ? AND receiverID = ?;";
+			String sql = "SELECT receiverID FROM Messages WHERE senderID = ?;";
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, Integer.parseInt(senderID));
-			ps.setInt(2, Integer.parseInt(receiverID));
 			rs = ps.executeQuery();
-			PriorityQueue<Message> messageHeap = new PriorityQueue<Message>(new Comparator<Message>() {
-				@Override
-				public int compare(Message m1, Message m2) {
-					Timestamp t1 = Timestamp.valueOf(m1.getTimestamp());
-					Timestamp t2 = Timestamp.valueOf(m2.getTimestamp());
-					return t1.compareTo(t2);
-				}
-			});
-		
-			while (rs.next()) {
-				Message message = new Message(rs.getString("message"), Integer.parseInt(senderID), rs.getString("timeStamp"));
-				messageHeap.add(message);
-			}
+            HashSet<Integer> userIds = new HashSet<>();
+            while (rs.next()) {
+                userIds.add(rs.getInt("receiverID"));
+            }
 			
 			//now get messages that were sent to the senderID from the receiverID
-			sql = "SELECT message, timeStamp FROM Messages WHERE receiverID = ? AND senderID = ?";
+			sql = "SELECT senderID FROM Messages WHERE receiverID = ?;";
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, Integer.parseInt(senderID));
-			ps.setInt(2, Integer.parseInt(receiverID));
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				Message message = new Message(rs.getString("message"), Integer.parseInt(senderID), rs.getString("timeStamp"));
-				messageHeap.add(message);
-			}
+            while (rs.next()) {
+                userIds.add(rs.getInt("receiverID"));
+            }
 
-			//get messages in order of timestamp
-			String lastMessage = "";
-			ArrayList<String> messageList = new ArrayList<>();
-			while (!messageHeap.isEmpty()) {
-				Message message = messageHeap.poll();
-				String jsonMessage = "{\"message\": \"" + message.getText() + "\", \"senderID\": \"" + message.getSenderId() + "\", \"timestamp\": \"" + message.getTimestamp() + "\"}";
-				messageList.add(jsonMessage);
-				lastMessage = message.getText();
-			}
-			String jsonArray = String.join(",", messageList);
-			String jsonResponse = String.format("{\"conversation\": [%s], \"lastMessage\": \"%s\"}", jsonArray, lastMessage);
+            StringBuilder jsonBuilder = new StringBuilder();
+            jsonBuilder.append("{\"ids\": [");
+            int count = 0;
+            for (Integer id : userIds) {
+                if (count > 0) {
+                    jsonBuilder.append(",");
+                }
+                jsonBuilder.append(id);
+                count++;
+            }
+            jsonBuilder.append("]}");
 
-			// Send the response
+            String jsonResponse = jsonBuilder.toString();
 			out.write(jsonResponse);
 			out.flush();
 			
@@ -133,28 +120,5 @@ public class GetMessage extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-}
 
-class Message {
-	private String text;
-	private int senderId;
-	private String timestamp;
-	
-	public Message(String text, int senderId, String timestamp) {
-		this.text = text;
-		this.senderId = senderId;
-		this.timestamp = timestamp;
-	}
-	
-	public String getText() {
-		return text;
-	}
-	
-	public int getSenderId() {
-		return senderId;
-	}
-	
-	public String getTimestamp() {
-		return timestamp;
-	}
 }
