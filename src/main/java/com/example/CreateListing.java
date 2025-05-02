@@ -35,7 +35,7 @@ public class CreateListing extends HttpServlet {
 	@Value("${spring.datasource.password}")
 	private String dbPassword;
        
-    public RegisterServlet() {
+    public CreateListing() {
         super();
         // TODO Auto-generated constructor stub
     }
