@@ -6,29 +6,21 @@ import MessageBubble from '../components/MessageBubble';
 
 const dummyConversations = [
   {
-    id: 1,
-    otherUserId: 2,
-    otherUserName: "LebronFan42069",
-    lastMessage: "Cool, let me know when you're free!",
+    otherUserId: 1,
+    otherUserName: "LebronFan42069"
   },
   {
-    id: 2,
-    otherUserId: 3,
-    otherUserName: "Deez",
-    lastMessage: "Thanks for the info!",
+    otherUserId: 2,
+    otherUserName: "Deez"
     
   },
   {
-    id: 3,
-    otherUserId: 4,
-    otherUserName: "Bot1",
-    lastMessage: "When can we meet?",
+    otherUserId: 3,
+    otherUserName: "Bot1"
   },
   {
-    id: 4,
-    otherUserId: 5,
-    otherUserName: "Bot2",
-    lastMessage: "Is it still available?",
+    otherUserId: 4,
+    otherUserName: "Bot2"
   },
 ];
 
@@ -100,8 +92,8 @@ export default function MessagingPage() {
 
       setMessages(prev => ({
         ...prev,
-        [selectedConversation.id]: [
-          ...(prev[selectedConversation.id] || []),
+        [selectedConversation.otherUserId]: [
+          ...(prev[selectedConversation.otherUserId] || []),
           newMsg
         ]
       }));
@@ -131,7 +123,7 @@ export default function MessagingPage() {
                </div>
 
                <div className="chat-body-full">
-                 {messages[selectedConversation.id]?.map((msg, idx) => (
+                 {messages[selectedConversation.otherUserId]?.map((msg, idx) => (
                    <MessageBubble
                      key={idx}
                      message={msg}

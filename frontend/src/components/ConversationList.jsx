@@ -15,7 +15,6 @@ function ConversationList({ conversations, onSelect})
 		        >
 					 <div className="conv-info">
 						<div className="">{conv.otherUserName}</div>
-						<div className="conv-last-message">{conv.lastMessage}</div>
 					 </div>
 				</div>
 			))}
