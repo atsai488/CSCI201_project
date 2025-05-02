@@ -59,6 +59,8 @@ public class SendMessage extends HttpServlet {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+
+			//first update the messages table with the new message
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			String senderID = request.getParameter("yourUserID");
 			String recieverID = request.getParameter("otherUserID");
@@ -74,12 +76,16 @@ public class SendMessage extends HttpServlet {
 			ps.setString(3, reciever);
 			ps.setTimestamp(4, timestamp);
 			ps.executeUpdate();
+
+			out.write("{\"success\": \"Message sent successfully!\"}");
+			out.flush();
 			
 		} catch (SQLException sqle) {
-			System.out.println ("SQLException: " + sqle.getMessage());
+			out.write("{\"error\": \"" + sqle.getMessage() + "\"}");
+			out.flush();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			out.write("{\"error\": \"" + e.getMessage() + "\"}");
+			out.flush();
 		} finally {
 			try {
 				if (rs != null) {
