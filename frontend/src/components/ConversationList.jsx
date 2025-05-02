@@ -10,16 +10,11 @@ function ConversationList({ conversations, onSelect})
 			{conversations.map((conv, index) => (
 				<div
 		          key={index}
-		          className={`conversation-item ${conv.unread ? "unread" : ""}`}
+		          className={`conversation-item`}
 		          onClick={() => onSelect(conv)}
 		        >
-					<img
-			            src={conv.listingThumbnail}
-			            alt="thumbnail"
-			            className="conv-thumbnail"
-			         />
 					 <div className="conv-info">
-					 	<div className="">{conv.listingName}</div>
+						<div className="">{conv.otherUserName}</div>
 						<div className="conv-last-message">{conv.lastMessage}</div>
 					 </div>
 				</div>

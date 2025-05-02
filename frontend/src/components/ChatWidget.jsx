@@ -11,37 +11,26 @@ const dummyConversations = [
       id: 1,
       otherUserId: 2,
       otherUserName: "LebronFan42069",
-      listingName: "Jordan 4 Black Cat",
-      listingThumbnail: "https://i.ebayimg.com/images/g/QwIAAOSwANJnBROf/s-l1600.webp",
       lastMessage: "Cool, let me know when you're free!",
-      unread: true
     },
     {
       id: 2,
       otherUserId: 3,
       otherUserName: "Deez",
-      listingName: "Essential Calculus",
-      listingThumbnail: "https://i.ebayimg.com/images/g/k8UAAOSw3PNmKU9T/s-l1600.webp",
       lastMessage: "Thanks for the info!",
-      unread: false
+      
     },
     {
       id: 3,
       otherUserId: 4,
       otherUserName: "Bot1",
-      listingName: "Cactus Jack USC hoodie",
-      listingThumbnail: "https://i.ebayimg.com/images/g/XKgAAOSwnq9n6I6n/s-l1600.webp",
       lastMessage: "When can we meet?",
-      unread: true
     },
     {
       id: 4,
       otherUserId: 5,
       otherUserName: "Bot2",
-      listingName: "Iphone 15",
-      listingThumbnail: "https://i.ebayimg.com/images/g/sY4AAOSwe01oADTe/s-l500.webp",
       lastMessage: "Is it still available?",
-      unread: false
     },
   ];
 

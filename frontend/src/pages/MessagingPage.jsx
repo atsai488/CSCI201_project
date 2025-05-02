@@ -5,101 +5,90 @@ import ConversationList from '../components/ConversationList';
 import MessageBubble from '../components/MessageBubble';
 
 const dummyConversations = [
-    {
-      id: 1,
-      otherUserId: 2,
-      otherUserName: "LebronFan42069",
-      listingName: "Jordan 4 Black Cat",
-      listingThumbnail: "https://i.ebayimg.com/images/g/QwIAAOSwANJnBROf/s-l1600.webp",
-      lastMessage: "Cool, let me know when you're free!",
-      unread: true
-    },
-    {
-      id: 2,
-      otherUserId: 3,
-      otherUserName: "Deez",
-      listingName: "Essential Calculus",
-      listingThumbnail: "https://i.ebayimg.com/images/g/k8UAAOSw3PNmKU9T/s-l1600.webp",
-      lastMessage: "Thanks for the info!",
-      unread: false
-    },
-    {
-      id: 3,
-      otherUserId: 4,
-      otherUserName: "Bot1",
-      listingName: "Cactus Jack USC hoodie",
-      listingThumbnail: "https://i.ebayimg.com/images/g/XKgAAOSwnq9n6I6n/s-l1600.webp",
-      lastMessage: "When can we meet?",
-      unread: true
-    },
-    {
-      id: 4,
-      otherUserId: 5,
-      otherUserName: "Bot2",
-      listingName: "Iphone 15",
-      listingThumbnail: "https://i.ebayimg.com/images/g/sY4AAOSwe01oADTe/s-l500.webp",
-      lastMessage: "Is it still available?",
-      unread: false
-    },
-  ];
+  {
+    id: 1,
+    otherUserId: 2,
+    otherUserName: "LebronFan42069",
+    lastMessage: "Cool, let me know when you're free!",
+  },
+  {
+    id: 2,
+    otherUserId: 3,
+    otherUserName: "Deez",
+    lastMessage: "Thanks for the info!",
+    
+  },
+  {
+    id: 3,
+    otherUserId: 4,
+    otherUserName: "Bot1",
+    lastMessage: "When can we meet?",
+  },
+  {
+    id: 4,
+    otherUserId: 5,
+    otherUserName: "Bot2",
+    lastMessage: "Is it still available?",
+  },
+];
 
 const dummyMessages = {
-	1: [
-	     {
-	       text: "Hey, is this still available?",
-	       senderId: 1,
-	       timestamp: "10:30 AM",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=1"
-	     },
-	     {
-	       text: "Yes, it is!",
-	       senderId: 2,
-	       timestamp: "10:31 AM",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=3"
-	     },
-	     {
-	       text: "Cool, let me know when you're free!",
-	       senderId: 1,
-	       timestamp: "10:32 AM",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=1"
-	     }
-	   ],
-	   2: [
-	     {
-	       text: "Appreciate the help!",
-	       senderId: 3,
-	       timestamp: "Yesterday",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=4"
-	     },
-	     {
-	       text: "No problem, let me know if you have questions.",
-	       senderId: 1,
-	       timestamp: "Yesterday",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=1"
-	     }
-	   ],
-	   3: [
-	     {
-	       text: "Hey! I'm interested in the listing.",
-	       senderId: 4,
-	       timestamp: "Today, 9:00 AM",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=5"
-	     },
-	     {
-	       text: "?",
-	       senderId: 4,
-	       timestamp: "Today, 9:05 AM",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=5"
-	     }
-	   ],
-	   4: [
-	     {
-	       text: "Is it still available?",
-	       senderId: 5,
-	       timestamp: "Today, 11:00 AM",
-	       senderProfilePic: "https://i.pravatar.cc/40?img=6"
-	     }
-	   ]
+  1: [
+    {
+      text: "Hey, is this still available?",
+      senderId: 1,
+      timestamp: "10:30 AM",
+      senderProfilePic: "https://i.pravatar.cc/40?img=1"
+    },
+    {
+      text: "Yes, it is!",
+      senderId: 2,
+      timestamp: "10:31 AM",
+      senderProfilePic: "https://i.pravatar.cc/40?img=3"
+    },
+    {
+      text: "Cool, let me know when you're free!",
+      senderId: 1,
+      timestamp: "10:32 AM",
+      senderProfilePic: "https://i.pravatar.cc/40?img=1"
+    }
+  ],
+  2: [
+    {
+      text: "Appreciate the help!",
+      senderId: 3,
+      timestamp: "Yesterday",
+      senderProfilePic: "https://i.pravatar.cc/40?img=4"
+    },
+    {
+      text: "No problem, let me know if you have questions.",
+      senderId: 1,
+      timestamp: "Yesterday",
+      senderProfilePic: "https://i.pravatar.cc/40?img=1"
+    }
+  ],
+  3: [
+    {
+      text: "Hey! I'm interested in the listing.",
+      senderId: 4,
+      timestamp: "Today, 9:00 AM",
+      senderProfilePic: "https://i.pravatar.cc/40?img=5"
+    },
+    {
+      text: "?",
+      senderId: 4,
+      timestamp: "Today, 9:05 AM",
+      senderProfilePic: "https://i.pravatar.cc/40?img=5"
+    }
+  ],
+  4: [
+    {
+      text: "Is it still available?",
+      senderId: 5,
+      timestamp: "Today, 11:00 AM",
+      senderProfilePic: "https://i.pravatar.cc/40?img=6"
+    }
+  ]
 };
 
 export default function MessagingPage() {
@@ -134,7 +123,7 @@ export default function MessagingPage() {
            <ConversationList
              conversations={dummyConversations.map(conv => ({
                ...conv,
-               otherUserName: conv.listingName
+               otherUserName: conv.otherUserName
              }))}
              onSelect={setSelectedConversation}
            />
@@ -147,7 +136,7 @@ export default function MessagingPage() {
              <>
                <div className="chat-header-full">
                  <button onClick={() => setSelectedConversation(null)}>⬅</button>
-                 <h2>{selectedConversation.listingName}</h2>
+                 <h2>{selectedConversation.otherUserName}</h2>
                </div>
 
                <div className="chat-body-full">
