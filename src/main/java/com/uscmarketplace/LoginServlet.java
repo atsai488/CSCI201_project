@@ -49,10 +49,8 @@ public class LoginServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		if(email.equals("guest") && password.equals("guest")) {
-			Cookie cookie = new Cookie("userEmail", email);
-			cookie.setMaxAge(3600);
-			cookie.setPath("/");
-			response.addCookie(cookie);
+			Cookie usercookie = createUserCookie(email);
+			response.addCookie(usercookie);
 			out.println("guestSuccess");
 			return;
 		}
@@ -75,10 +73,8 @@ public class LoginServlet extends HttpServlet {
 			if(rs.next()) {
 				String passwordHash = rs.getString("password");
 				if(bc.matches(password, passwordHash)) {
-					Cookie cookie = new Cookie("userEmail", email);
-					cookie.setMaxAge(3600);
-					cookie.setPath("/");
-					response.addCookie(cookie);
+					Cookie usercookie = createUserCookie(email);
+					response.addCookie(usercookie);
 					out.println("success");
 				}
 				else {
@@ -117,5 +113,10 @@ public class LoginServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
+	private Cookie createUserCookie(String email){
+		Cookie cookie = new Cookie("userEmail", email);
+		cookie.setMaxAge(3600);
+		cookie.setPath("/");
+		return cookie;
+	}
 }
