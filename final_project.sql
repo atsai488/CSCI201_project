@@ -5,10 +5,10 @@ use final;
 create table Users(
 	SID int auto_increment primary key,
     username varchar(100) not null,
-    pass varchar(100) not null,
+    password varchar(100) not null,
     rating float not null,
     email varchar(100) not null,
-    token varchar(400) not null
+    role ENUM('buyer', 'seller') NOT NULL 
 );
 
 create table Product(
