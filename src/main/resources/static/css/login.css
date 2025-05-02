@@ -1,0 +1,175 @@
+html {
+	height: 100%;
+	overflow: hidden;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #800;
+  border-bottom: 1px solid #eee;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-container img {
+  width: 300px;
+  height: auto;
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-box {
+  background: #fafafa;
+  border: 1px solid #dbdbdb;
+  width: 350px;
+  padding: 30px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.title {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.title-register {
+	font-size: 38px;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  background-color: #fafafa;
+  font-size: 14px;
+}
+
+form button {
+  width: 100%;
+  background-color: #205375;
+  opacity: 0.4;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: not-allowed;
+  margin-top: 10px;
+}
+
+form select {
+	width: 50%;
+	padding: 10px;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	background-color: #fafafa;
+	border: 1px solid #ccc;
+	font-size: 14px;
+	font-family: sans-serif;
+	color: light-gray;
+	text-align: center;
+	text-align-last: center;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #999;
+  font-size: 13px;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #dbdbdb;
+}
+
+.divider span {
+  margin: 0 10px;
+  font-weight: 500;
+}
+
+.guest-button {
+  width: 100%;
+  background-color: light-gray;
+  color: black;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.guest-button:hover {
+  background-color: gray;
+}
+
+.invalid-email {
+	border: 2px solid red;
+	color: red;
+}
+
+.signup-box {
+  padding: 20px 30px;
+  font-size: 14px;
+}
+
+.invalid-input-img {
+	display: none;
+	position: absolute;
+	vertical-align: middle;
+	right: 5px;
+	height: 16px;
+	width: 16px;
+	padding: 10px 10px;
+	margin-right: 5px;
+}
+
+.input-valid {
+	position: relative;
+	display: flex;
+}
+
+.error-msg {
+	color: red;
+	margin: 0px;
+}
+
+.signup-box a {
+  color: #205375;
+  text-decoration: none;
+  font-weight: 500;
+}
