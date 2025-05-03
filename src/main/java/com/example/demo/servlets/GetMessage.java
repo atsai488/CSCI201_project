@@ -1,28 +1,25 @@
 package com.example.demo.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Comparator;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Cookie;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 @WebServlet("/get-messages-servlet")
@@ -49,7 +46,6 @@ public class GetMessage extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-		String senderID = request.getParameter("yourUserID");
 		
 		String email = request.getParameter("email");
 		String receiverID = request.getParameter("otherUserID");
