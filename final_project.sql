@@ -2,12 +2,12 @@ drop database if exists final;
 create database final;
 use final;
 
-create table Users(
-	SID int auto_increment primary key,
-    username varchar(100) not null,
-    password varchar(100) not null,
-    rating float not null,
-    email varchar(100) not null,
+CREATE TABLE Users (
+	SID INT AUTO_INCREMENT PRIMARY KEY,
+	fname VARCHAR(255) NOT NULL,
+    lname VARCHAR(255) NOT NULL,
+	email VARCHAR(255) UNIQUE NOT NULL,
+	password VARCHAR(255) NOT NULL,
     role ENUM('buyer', 'seller') NOT NULL 
 );
 
