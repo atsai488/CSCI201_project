@@ -8,7 +8,7 @@ export default function MessagingPage() {
   const YOUR_USER_ID = 1;
 
   const [conversations, setConversations] = useState([]);
-  const [messages, setMessages] = useState({});
+  const [messages, setMessages] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messageText, setMessageText] = useState("");
 
