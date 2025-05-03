@@ -8,11 +8,11 @@ export default function MessagingPage() {
   const YOUR_USER_ID = 1;
 
   const [conversations, setConversations] = useState([]);
-  const [messages, setMessages] = useState({}); // Changed to object
+  const [messages, setMessages] = useState({}); // ← object keyed by otherUserId
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messageText, setMessageText] = useState("");
 
-  // Load all conversations on mount
+  // 1️⃣ Load all conversations on mount
   useEffect(() => {
     fetch(`http://localhost:8080/get-conversation-servlet?yourUserID=${YOUR_USER_ID}`)
       .then(res => res.json())
@@ -20,27 +20,26 @@ export default function MessagingPage() {
       .catch(err => console.error("Failed to fetch conversations:", err));
   }, []);
 
+  // 2️⃣ When a conversation is selected, load its messages
   useEffect(() => {
     if (!selectedConversation) return;
-    const userEmail = localStorage.getItem("email");
-    if (!userEmail) return;
-  
-    const fetchMessages = () => {
-      fetch(`/get-messages-servlet?email=${encodeURIComponent(userEmail)}&otherUserID=${selectedConversation.otherUserId}`)
-        .then(res => res.json())
-        .then(data => {
-          setMessages(data.messages);
-        })
-        .catch(err => console.error("Failed to fetch messages:", err));
-    };
-  
-    fetchMessages();
-  
-    const intervalId = setInterval(fetchMessages, 5000); 
-  
-    return () => clearInterval(intervalId); 
-  }, [selectedConversation]);  
-  
+
+    fetch(
+      `http://localhost:8080/get-messages-servlet?email=${localStorage.getItem("email")}&otherUserID=${selectedConversation.otherUserId}`
+    )
+      .then(res => res.json())
+      .then(data => {
+        if (data.messages) {
+          setMessages(prev => ({
+            ...prev,
+            [selectedConversation.otherUserId]: data.messages
+          }));
+        }
+      })
+      .catch(err => console.error("Failed to fetch messages:", err));
+  }, [selectedConversation]);
+
+  // 3️⃣ Send a new message
   const handleSend = () => {
     if (!messageText.trim() || !selectedConversation) return;
 
@@ -53,28 +52,28 @@ export default function MessagingPage() {
         message: messageText.trim()
       })
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        const newMsg = {
-          text: messageText.trim(),
-          senderId: YOUR_USER_ID,
-          timestamp: "Just now"
-        };
-
-        setMessages(prev => ({
-          ...prev,
-          [selectedConversation.otherUserId]: [
-            ...(prev[selectedConversation.otherUserId] || []),
-            newMsg
-          ]
-        }));
-        setMessageText("");
-      } else {
-        console.error("Failed to send message:", data.error);
-      }
-    })
-    .catch(err => console.error("Send message failed:", err));
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Append locally so UI updates immediately
+          const newMsg = {
+            text: messageText.trim(),
+            senderId: YOUR_USER_ID,
+            timestamp: "Just now"
+          };
+          setMessages(prev => ({
+            ...prev,
+            [selectedConversation.otherUserId]: [
+              ...(prev[selectedConversation.otherUserId] || []),
+              newMsg
+            ]
+          }));
+          setMessageText("");
+        } else {
+          console.error("Send failed:", data.error);
+        }
+      })
+      .catch(err => console.error("Send error:", err));
   };
 
   return (
@@ -97,6 +96,7 @@ export default function MessagingPage() {
             </div>
 
             <div className="chat-body-full">
+              {/* ← HERE we render the array for this conversation */}
               {messages[selectedConversation.otherUserId]?.map((msg, idx) => (
                 <MessageBubble
                   key={idx}
@@ -128,3 +128,4 @@ export default function MessagingPage() {
     </div>
   );
 }
+

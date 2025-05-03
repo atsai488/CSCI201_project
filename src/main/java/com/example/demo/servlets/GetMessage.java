@@ -50,7 +50,7 @@ public class GetMessage extends HttpServlet {
 		String email = request.getParameter("email");
 		String receiverID = request.getParameter("otherUserID");
 		PrintWriter out = response.getWriter();
-		String senderID = "";
+		String senderID = "1";
 		Connection conn = null;
 		Statement st = null;
 		PreparedStatement ps = null;
