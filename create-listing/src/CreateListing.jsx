@@ -37,22 +37,18 @@ export default function CreateListing() {
 
         setIsLoading(true)
         setError(null)
-
-        const data = new FormData()
-        data.append('name', formData.name)
-        data.append('price', formData.price)
-        data.append('category', formData.category)
-        data.append('description', formData.description)
-        data.append('image1', formData.image1)
-        data.append('image2', formData.image2)
-        data.append('image3', formData.image3)
-        data.append('email', localStorage.getItem('userEmail'))
         
         try {
             const response = await fetch("/create-listing-servlet", {
                 method: "POST",
-                body: data
-            })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    email: localStorage.getItem('userEmail')
+                })
+            });
             const results = await response.json()
 
             if (results.error) {
@@ -98,7 +94,6 @@ export default function CreateListing() {
                 </div>
                 <form
                     method="POST"
-                    encType='multipart/form-data'
                     className='needs-validation'
                     onSubmit={handleSubmit}
                     noValidate
