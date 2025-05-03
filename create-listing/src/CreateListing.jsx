@@ -1,5 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CustomFileInput from './CustomFileInput';
 import './CreateListing.css'
 import { useState } from 'react';
 

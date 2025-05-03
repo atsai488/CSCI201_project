@@ -56,7 +56,7 @@ public class CreateListing extends HttpServlet {
 		String image1 = request.getParameter("image1");
 		String image2 = request.getParameter("image2");
 		String image3 = request.getParameter("image3");
-		String email = request.getParameter("userEmail");
+		String email = request.getParameter("email");
 		PrintWriter out = response.getWriter();
 		
 		Connection conn = null;
@@ -73,7 +73,7 @@ public class CreateListing extends HttpServlet {
 			rs = ps.executeQuery();
 			int sellerID = -1;
 			if (rs.next()) {
-				sellerID = rs.getInt("userID");
+				sellerID = rs.getInt("SID");
 			} else {
 				out.println("{\"error\": \"An error occurred.\"}");
 				return;
