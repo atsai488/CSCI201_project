@@ -21,9 +21,6 @@ export default function CreateListing() {
         setFormData(prev => ({ ...prev, [name]: value }));
     }
 
-    function handleImgChange(name, file) {
-        setFormData(prev => ({ ...prev, [name]: file }));
-    }
 
     async function handleSubmit(e) {
         e.preventDefault()
