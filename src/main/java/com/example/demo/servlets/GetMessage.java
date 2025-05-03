@@ -50,9 +50,11 @@ public class GetMessage extends HttpServlet {
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
 		String senderID = request.getParameter("yourUserID");
+		
+		String email = request.getParameter("email");
 		String receiverID = request.getParameter("otherUserID");
 		PrintWriter out = response.getWriter();
-		
+		String senderID = "";
 		Connection conn = null;
 		Statement st = null;
 		PreparedStatement ps = null;
@@ -60,7 +62,16 @@ public class GetMessage extends HttpServlet {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			String sql = "SELECT message, timeStamp FROM Messages WHERE senderID = ? AND receiverID = ?;";
+			String sql = "SELECT SID from Users where email = ?;";
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, email);
+			rs = ps.executeQuery();
+			if (rs.next()){
+				senderID = rs.getString("SID");
+			}
+			
+			
+			sql = "SELECT message, timeStamp FROM Messages WHERE senderID = ? AND receiverID = ?;";
 			ps = conn.prepareStatement(sql);
 			ps.setInt(1, Integer.parseInt(senderID));
 			ps.setInt(2, Integer.parseInt(receiverID));

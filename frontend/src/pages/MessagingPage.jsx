@@ -20,24 +20,27 @@ export default function MessagingPage() {
       .catch(err => console.error("Failed to fetch conversations:", err));
   }, []);
 
-  // Load messages for selected conversation
   useEffect(() => {
     if (!selectedConversation) return;
-
-    fetch(`/get-messages-servlet?yourUserID=${YOUR_USER_ID}&otherUserID=${selectedConversation.otherUserId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.messages) {
-          setMessages(prev => ({
-            ...prev,
-            [selectedConversation.otherUserId]: data.messages
-          }));
-        }
-      })
-      .catch(err => console.error("Failed to fetch messages:", err));
-  }, [selectedConversation]);
-
-  // Send message to backend
+    const userEmail = localStorage.getItem("email");
+    if (!userEmail) return;
+  
+    const fetchMessages = () => {
+      fetch(`/get-messages-servlet?email=${encodeURIComponent(userEmail)}&otherUserID=${selectedConversation.otherUserId}`)
+        .then(res => res.json())
+        .then(data => {
+          setMessages(data.messages);
+        })
+        .catch(err => console.error("Failed to fetch messages:", err));
+    };
+  
+    fetchMessages();
+  
+    const intervalId = setInterval(fetchMessages, 5000); 
+  
+    return () => clearInterval(intervalId); 
+  }, [selectedConversation]);  
+  
   const handleSend = () => {
     if (!messageText.trim() || !selectedConversation) return;
 
