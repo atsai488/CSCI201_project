@@ -43,3 +43,16 @@ create table Messages (
     foreign key (SenderID) references Users(SID),
     foreign key (ReceiverID) references Users(SID)
 );
+
+-- fk stands for foreign key not for.. y'know what
+create table Ratings (
+  id int AUTO_INCREMENT primary key,
+  buyerID int not null,
+  sellerID int not null,
+  stars int not null check (stars between 1 and 5),
+  comment varchar(500),
+  createdAt datetime not null default CURRENT_TIMESTAMP,
+  constraint fk_ratings_buyer foreign key (buyerID) references Users(SID), 
+  constraint fk_ratings_seller foreign key (sellerID) references Users(SID),
+  constraint uc_buyer_seller unique (buyerID, sellerID)
+);
