@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@WebServlet("/default-listings-servlet")
-public class DefaultListing extends HttpServlet {
+@WebServlet("/listing-details-servlet")
+public class ListingServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	@Value("${spring.datasource.url}")
@@ -34,7 +34,7 @@ public class DefaultListing extends HttpServlet {
 	@Value("${spring.datasource.password}")
 	private String dbPassword;
        
-    public DefaultListing() {
+    public ListingServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -42,6 +42,7 @@ public class DefaultListing extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		PrintWriter out = response.getWriter();
+		String id = request.getParameter("id");
 
 		Connection conn = null;
 		Statement st = null;
@@ -50,14 +51,16 @@ public class DefaultListing extends HttpServlet {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			String sql = "SELECT * FROM Product LIMIT 12;";
-            ps = conn.prepareStatement(sql);
+			
+			String sql = "SELECT * FROM Product WHERE id = ?";
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, Integer.parseInt(id));
             rs = ps.executeQuery();
             
-            Listing[] listings = new Listing[12];
-            int i = 0;
+            Listing listing = null;
+            
             while (rs.next()) {
-                Listing listing = new Listing(
+            	listing = new Listing(
                         rs.getInt("id"),
                         rs.getString("product_name"),
                         rs.getFloat("price"),
@@ -67,26 +70,20 @@ public class DefaultListing extends HttpServlet {
                         rs.getString("image3"),
                         rs.getInt("sellerId")
                 );
-                listings[i] = listing;
-                i++;
             }
             String json = "{\"listings\":[";
-            for (int j = 0; j < i; j++) {
-                json += "{\"id\":" + listings[j].id + ",\"product_name\":\"" + listings[j].product_name + "\",\"price\":" + listings[j].price + ",\"description\":\"" + listings[j].description + "\",\"image1\":\"" + listings[j].image1 + "\",\"sellerId\":" + listings[j].sellerId + "}";
-                if (j < i - 1) {
-                    json += ",";
-                }
-            }
+            json += "{\"id\":" + listing.id + ",\"product_name\":\"" + listing.product_name + "\",\"price\":" + listing.price + ",\"description\":\"" + listing.description + "\",\"image1\":\"" + listing.image1 + "\",\"image2\":\"" + listing.image2 + "\",\"image3\":\"" + listing.image3 + "\",\"sellerId\":" + listing.sellerId + "}";
             json += "]}";
             response.setContentType("application/json");
             out.print(json);
             out.flush(); 
-
 		} catch (SQLException sqle) {
 			System.out.println ("SQLException: " + sqle.getMessage());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		} finally {
+		} catch (Exception e){
+			
+		}finally {
 			try {
 				if (rs != null) {
 					rs.close();
@@ -111,22 +108,3 @@ public class DefaultListing extends HttpServlet {
 		doGet(request, response);
 	}
 }
-
-//class Listing{
-//    public int id;
-//    public String product_name;
-//    public float price;
-//    public String description;
-//    public String image1;
-//    public int sellerId;
-//    public String category;
-//
-//    public Listing(int id, String product_name, float price, String description, String image1, int sellerId) {
-//        this.id = id;
-//        this.product_name = product_name;
-//        this.price = price;
-//        this.description = description;
-//        this.image1 = image1;
-//        this.sellerId = sellerId;
-//    }
-//}

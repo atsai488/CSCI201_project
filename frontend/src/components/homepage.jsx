@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../css/style.css'; 
 
@@ -8,25 +8,31 @@ export default function Homepage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [listings, setListings] = useState([]);
 
-  useEffect(() => {
-    const fetchInitialListings = async () => {
-      try {
-        const response = await fetch('/default-listings-servlet');
-        if (response.error) throw new Error('Failed to fetch initial listings');
-        const data = await response.json();
-        setListings(data);
-      } catch (error) {
-        console.error('Error fetching initial listings:', error);
-        setListings([]);
-      }
-    };
+  const fetchInitialListings = async () => {
+        try {
+          const response = await fetch('/default-listings-servlet');
+          if (response.error) throw new Error('Failed to fetch initial listings');
+          const data = await response.json();
+          setListings(data.listings || []);
+        } catch (error) {
+          console.error('Error fetching initial listings:', error);
+          setListings([]);
+        }
+      };
+	  
+const viewListing = (listing) => {
+	window.location.href = `/listing/${listing.id}`;
+}
   
+  useEffect(() => {
     fetchInitialListings();
   }, []);
   return (
     <>
       <header>
-        <div className="header">USC Marketplace</div>
+		<div className="header" onClick={fetchInitialListings} style={{cursor: "pointer"}}>
+		  USC Marketplace
+		</div>
         <div className="nav-icons">
           <i
             id="addIcon"
@@ -84,7 +90,7 @@ export default function Homepage() {
                 const response = await fetch(`/search-listings-servlet?search=${encodeURIComponent(searchTerm.trim())}`);
                 if (response.error) throw new Error('Search failed');
                 const data = await response.json();
-                setListings(data);
+                setListings(data.listings || []);
               } catch (error) {
                 console.error('Error fetching search results:', error);
                 setListings([]);
@@ -110,7 +116,9 @@ export default function Homepage() {
         <div id="listingsGrid" className="grid">
           {listings.length > 0 ? (
             listings.map(listing => (
-              <div key={listing.id} className="listing-item">
+              <div key={listing.id} className="listing-item"
+			  	   onClick={() => viewListing(listing)}
+				   style={{cursor: "pointer"}} >
                 <img
                   src={listing.image1}
                   alt={listing.product_name}

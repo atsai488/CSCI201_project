@@ -50,7 +50,7 @@ public class SearchListings extends HttpServlet {
 		try {
 			String search = request.getParameter("search");
 			if (search == null || search.isEmpty()) {
-				out.print("{\"error\":Search term is required}");
+				out.print("{\"error\":\"Search term is required\"}");
 				out.flush();
 				throw new IllegalArgumentException("Search term is required");
 			}
@@ -58,18 +58,20 @@ public class SearchListings extends HttpServlet {
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
 			String sql = "SELECT * FROM Product WHERE product_name LIKE ? LIMIT 12;";
             ps = conn.prepareStatement(sql);
-			ps.setString(1, sql);
+			ps.setString(1, "%" + search + "%");
             rs = ps.executeQuery();
             
-            ListingItem[] listings = new ListingItem[12];
+            Listing[] listings = new Listing[12];
             int i = 0;
             while (rs.next()) {
-            	ListingItem listing = new ListingItem(
+            	Listing listing = new Listing(
                         rs.getInt("id"),
                         rs.getString("product_name"),
                         rs.getFloat("price"),
-                        rs.getString("description"),
+                        rs.getString("descript"),
                         rs.getString("image1"),
+                        rs.getString("image2"),
+                        rs.getString("image3"),
                         rs.getInt("sellerId")
                 );
                 listings[i] = listing;
@@ -83,6 +85,7 @@ public class SearchListings extends HttpServlet {
                 }
             }
             json += "]}";
+            response.setContentType("application/json");
             out.print(json);
             out.flush(); 
 
@@ -116,23 +119,4 @@ public class SearchListings extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-}
-
-class ListingItem{
-    public int id;
-    public String product_name;
-    public float price;
-    public String description;
-    public String image1;
-    public int sellerId;
-    public String category;
-
-    public ListingItem(int id, String product_name, float price, String description, String image1, int sellerId) {
-        this.id = id;
-        this.product_name = product_name;
-        this.price = price;
-        this.description = description;
-        this.image1 = image1;
-        this.sellerId = sellerId;
-    }
 }
