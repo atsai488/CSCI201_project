@@ -3,10 +3,14 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../css/style.css'; 
 
 export default function Homepage() {
-  const userRole = 'seller';
+  const [userRole, setUserRole] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [listings, setListings] = useState([]);
+  
+  const viewListing = (listing) => {
+  	window.location.href = `/listing/${listing.id}`;
+  }
 
   const fetchInitialListings = async () => {
         try {
@@ -19,13 +23,31 @@ export default function Homepage() {
           setListings([]);
         }
       };
-	  
-const viewListing = (listing) => {
-	window.location.href = `/listing/${listing.id}`;
-}
   
   useEffect(() => {
     fetchInitialListings();
+	
+	async function getUserRole() {
+		const email = localStorage.getItem("email");
+			if(!email){
+				window.location.href = "/login";
+			}
+			try {
+				const response = await fetch(`/get-user-role?email=${encodeURIComponent(email)}`);
+				if (response.error) throw new Error('Failed to fetch user role');
+				const data = await response.json();
+				if(data.role === "fail"){
+					// Do nothing, keep user role empty
+				}
+				else{
+					setUserRole(data.role);	
+				}
+			} catch (error) {
+				console.error('Error fetching user role:', error);
+			}	
+	}
+	
+	getUserRole();
   }, []);
   return (
     <>
@@ -43,12 +65,32 @@ const viewListing = (listing) => {
           <i
             id="messageIcon"
             className="fa fa-comment"
+			style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
             onClick={() => (window.location.href = '/messages')}
           />
+		  <i
+	        id="loginIcon"
+	        className="fa fa-sign-in-alt"
+			style={{ display: userRole ==='guest' ? 'inline-block' : 'none' }}
+	        onClick={() => {
+				localStorage.removeItem("email");
+				window.location.href = '/login';
+			}}
+	      />
+		  <i
+  	        id="registerIcon"
+  	        className="fa fa-user-plus"
+  			style={{ display: userRole ==='guest' ? 'inline-block' : 'none' }}
+  	        onClick={() => {
+				localStorage.removeItem("email");
+				window.location.href = '/register';
+			}}
+  	      />
           <div className="profile-container">
             <i
               id="profileIcon"
               className="fa fa-user"
+			  style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
               onClick={() => setProfileOpen(o => !o)}
             />
             {profileOpen && (
@@ -67,7 +109,10 @@ const viewListing = (listing) => {
                   </li>
                   <li
                     id="logout"
-                    onClick={() => (window.location.href = '/logout')}
+					onClick={() => {
+						localStorage.removeItem("email");
+						window.location.href = '/logout';
+					}}
                   >
                     <i className="fa fa-sign-out-alt" /> Logout
                   </li>

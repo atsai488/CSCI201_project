@@ -158,8 +158,8 @@ function guestLogin(event) {
 	.then(res => res.text())
 	.then(text => {
 		if(text.trim() === "guestSuccess"){
-			window.location.href = "/home";
 			localStorage.setItem("email", email);
+			window.location.href = "/home";
 		}
 		else {
 			console.log("Error with guest login");
@@ -185,8 +185,8 @@ function register(event) {
 	.then(res => res.text())
 	.then(text => {
 		if(text.trim() === "success"){
-			window.location.href = "/home";
 			localStorage.setItem("email", email);
+			window.location.href = "/home";
 		}
 		else {
 			document.getElementById("emailMsg").textContent = "Email already exists.";

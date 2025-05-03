@@ -4,6 +4,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: white;
   padding: 16px;
   background: #800;
   border-bottom: 1px solid #eee;
@@ -100,7 +101,6 @@ main { padding: 16px; }
   background: #ccc;
   border-radius: 8px;
 }
-<<<<<<< HEAD:frontend/src/css/style.css
 
 .listing-title,
 .listing-price {
@@ -134,7 +134,8 @@ main { padding: 16px; }
   object-fit: cover;
   border-radius: 8px;
   z-index: 1;
-=======
+}
+
 .ratings-section {
   max-width: 800px;
   margin: 0 auto;
@@ -209,5 +210,4 @@ main { padding: 16px; }
 .rating-item small {
   color: #666;
   margin-top: 0.5rem;
->>>>>>> c340bf7c62a52440c4a164f52d66d2151d1796cb:src/css/style.css
 }
