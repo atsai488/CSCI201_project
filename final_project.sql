@@ -2,12 +2,12 @@ drop database if exists final;
 create database final;
 use final;
 
-create table Users(
-	SID int auto_increment primary key,
-    username varchar(100) not null,
-    password varchar(100) not null,
-    rating float not null,
-    email varchar(100) not null,
+CREATE TABLE Users (
+	SID INT AUTO_INCREMENT PRIMARY KEY,
+	fname VARCHAR(255) NOT NULL,
+    lname VARCHAR(255) NOT NULL,
+	email VARCHAR(255) UNIQUE NOT NULL,
+	password VARCHAR(255) NOT NULL,
     role ENUM('buyer', 'seller') NOT NULL 
 );
 
@@ -24,19 +24,9 @@ create table Product(
     foreign key (sellerID) references Users(SID)
 );
 
-create table Conversation(
-    id int auto_increment primary key,
-    user1ID int not null,
-    user2ID int not null,
-    unread bool not null,
-    listing_name varchar(50) not null,
-    foreign key (user1ID) references Users(SID),
-    foreign key (user2ID) references Users(SID)
-);
-
 create table Messages (
     id int auto_increment primary key,
-    Text text not null,
+    message text not null,
     SenderID int not null,
     ReceiverID int not null,
     timeStamp datetime not null,

@@ -6,7 +6,23 @@ export default function Homepage() {
   const userRole = 'seller';
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [listings, setListings] = useState([]);
 
+  useEffect(() => {
+    const fetchInitialListings = async () => {
+      try {
+        const response = await fetch('/default-listings-servlet');
+        if (response.error) throw new Error('Failed to fetch initial listings');
+        const data = await response.json();
+        setListings(data);
+      } catch (error) {
+        console.error('Error fetching initial listings:', error);
+        setListings([]);
+      }
+    };
+  
+    fetchInitialListings();
+  }, []);
   return (
     <>
       <header>
@@ -58,13 +74,21 @@ export default function Homepage() {
 
       <main>
         <div className="search-container">
-          <form
+        <form
             id="searchForm"
-            onSubmit={e => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              document.getElementById(
-                'listingsHeading'
-              ).textContent = `Listings for “${searchTerm.trim()}”`;
+              document.getElementById('listingsHeading').textContent = `Listings for “${searchTerm.trim()}”`;
+
+              try {
+                const response = await fetch(`/search-listings-servlet?search=${encodeURIComponent(searchTerm.trim())}`);
+                if (response.error) throw new Error('Search failed');
+                const data = await response.json();
+                setListings(data);
+              } catch (error) {
+                console.error('Error fetching search results:', error);
+                setListings([]);
+              }
             }}
           >
             <div className="search-input-wrapper">
@@ -84,9 +108,21 @@ export default function Homepage() {
           Listings for “{searchTerm.trim() || ' '}”
         </h1>
         <div id="listingsGrid" className="grid">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="listing-item" />
-          ))}
+          {listings.length > 0 ? (
+            listings.map(listing => (
+              <div key={listing.id} className="listing-item">
+                <img
+                  src={listing.image1}
+                  alt={listing.product_name}
+                  className="listing-image"
+                />
+                <h2 className="listing-title">{listing.product_name}</h2>
+                <p className="listing-price">${listing.price}</p>
+              </div>
+            ))
+          ) : (
+            <p>No listings found.</p>
+          )}
         </div>
       </main>
     </>
