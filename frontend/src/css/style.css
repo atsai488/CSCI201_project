@@ -100,6 +100,7 @@ main { padding: 16px; }
   background: #ccc;
   border-radius: 8px;
 }
+<<<<<<< HEAD:frontend/src/css/style.css
 
 .listing-title,
 .listing-price {
@@ -133,4 +134,80 @@ main { padding: 16px; }
   object-fit: cover;
   border-radius: 8px;
   z-index: 1;
+=======
+.ratings-section {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ratings-summary {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ratings-summary .star-display {
+  font-size: 1.5rem;
+  color: #da3743; /* Yelp red */
+  margin-right: 0.5rem;
+}
+
+.rating-form {
+  margin-bottom: 2rem;
+}
+
+.rating-form .star-rating .star {
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.rating-form .star-rating .star.selected {
+  color: #da3743;
+}
+
+.rating-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  margin-top: 0.5rem;
+}
+
+.rating-form button {
+  background-color: #da3743;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.rating-form button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.ratings-list .rating-item {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.rating-item .star-display {
+  font-size: 1.2rem;
+  color: #da3743;
+}
+
+.rating-item small {
+  color: #666;
+  margin-top: 0.5rem;
+>>>>>>> c340bf7c62a52440c4a164f52d66d2151d1796cb:src/css/style.css
 }
