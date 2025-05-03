@@ -131,6 +131,7 @@ function login(event) {
 	.then(text => {
 		if(text.trim() == "success"){
 			window.location.href = "/home";
+			localStorage.setItem("email", email);
 		}
 		else {
 			document.getElementById("passwordMsg").textContent = "Email or password incorrect";
@@ -158,6 +159,7 @@ function guestLogin(event) {
 	.then(text => {
 		if(text.trim() === "guestSuccess"){
 			window.location.href = "/home";
+			localStorage.setItem("email", email);
 		}
 		else {
 			console.log("Error with guest login");
@@ -184,6 +186,7 @@ function register(event) {
 	.then(text => {
 		if(text.trim() === "success"){
 			window.location.href = "/home";
+			localStorage.setItem("email", email);
 		}
 		else {
 			document.getElementById("emailMsg").textContent = "Email already exists.";
