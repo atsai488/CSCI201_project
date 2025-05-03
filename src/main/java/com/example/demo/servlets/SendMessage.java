@@ -1,3 +1,4 @@
+package com.example.demo.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
@@ -25,13 +26,13 @@ public class SendMessage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	@Value("${spring.datasource.url}")
-	private String db;
+	private String db = "jdbc:mysql://localhost:3306/uscmarketplace";
 	
 	@Value("${spring.datasource.username}")
-	private String dbUsername;
+	private String dbUsername = "root";
 	
 	@Value("${spring.datasource.password}")
-	private String dbPassword;
+	private String dbPassword = "root";
        
     public SendMessage() {
         super();
@@ -46,6 +47,12 @@ public class SendMessage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+		
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		String senderID = request.getParameter("yourUserID");
 		String recieverID = request.getParameter("otherUserID");
