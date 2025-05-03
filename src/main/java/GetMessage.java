@@ -90,12 +90,12 @@ public class GetMessage extends HttpServlet {
 			ArrayList<String> messageList = new ArrayList<>();
 			while (!messageHeap.isEmpty()) {
 				Message message = messageHeap.poll();
-				String jsonMessage = "{\"message\": \"" + message.getText() + "\", \"senderID\": \"" + message.getSenderId() + "\", \"timestamp\": \"" + message.getTimestamp() + "\"}";
+				String jsonMessage = "{\"text\": \"" + message.getText() + "\", \"senderId\": " + message.getSenderId() + ", \"timestamp\": \"" + message.getTimestamp() + "\"}";
 				messageList.add(jsonMessage);
 				lastMessage = message.getText();
 			}
 			String jsonArray = String.join(",", messageList);
-			String jsonResponse = String.format("{\"conversation\": [%s], \"lastMessage\": \"%s\"}", jsonArray, lastMessage);
+			String jsonResponse = String.format("{\"otherUserId\": %s, \"messages\": [%s]}", receiverID, jsonArray);
 
 			// Send the response
 			out.write(jsonResponse);
