@@ -23,6 +23,8 @@ import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 @Component
 @WebServlet("/get-conversation-servlet")
@@ -55,37 +57,45 @@ public class GetConversation extends HttpServlet {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			String sql = "SELECT receiverID FROM Messages WHERE senderID = ?;";
-			ps = conn.prepareStatement(sql);
-			ps.setInt(1, Integer.parseInt(senderID));
-			rs = ps.executeQuery();
-            HashSet<Integer> userIds = new HashSet<>();
+			HashSet<Integer> userIds = new HashSet<>();
+            String sql = "SELECT receiverID FROM Messages WHERE senderID = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, Integer.parseInt(senderID));
+            rs = ps.executeQuery();
             while (rs.next()) {
                 userIds.add(rs.getInt("receiverID"));
             }
-			
-			//now get messages that were sent to the senderID from the receiverID
-			sql = "SELECT senderID FROM Messages WHERE receiverID = ?;";
-			ps = conn.prepareStatement(sql);
-			ps.setInt(1, Integer.parseInt(senderID));
+            
+
+            sql = "SELECT senderID FROM Messages WHERE receiverID = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, Integer.parseInt(senderID));
+            rs = ps.executeQuery();
             while (rs.next()) {
-                userIds.add(rs.getInt("receiverID"));
+                userIds.add(rs.getInt("senderID"));  
             }
 
-            StringBuilder jsonBuilder = new StringBuilder();
-            jsonBuilder.append("{\"ids\": [");
-            int count = 0;
+            sql = "Select username from USERS where SID = ?;";
+            ArrayList<Profile> usernames = new ArrayList<Profile>();
+            
             for (Integer id : userIds) {
-                if (count > 0) {
-                    jsonBuilder.append(",");
+                ps.setInt(1, id);
+                rs = ps.executeQuery();
+                if (rs.next()){
+                    usernames.add(new Profile(rs.getString("username"), id));
                 }
-                jsonBuilder.append(id);
-                count++;
             }
-            jsonBuilder.append("]}");
+            JsonArray jsonArray = new JsonArray();
 
-            String jsonResponse = jsonBuilder.toString();
-			out.write(jsonResponse);
+            for (Profile profile : usernames) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("otherUserId", profile.getID());
+                jsonObject.addProperty("otherUserName", profile.getUsername());
+                jsonArray.add(jsonObject);
+            }
+
+            String jsonResponse = jsonArray.toString();
+            out.write(jsonResponse);
 			out.flush();
 			
 		} catch (SQLException sqle) {
@@ -121,4 +131,19 @@ public class GetConversation extends HttpServlet {
 		doGet(request, response);
 	}
 
+}
+
+class Profile{
+    private String username;
+    private int id;
+    public Profile(String username, int id){
+        this.username = username;
+        this.id = id;
+    }
+    public int getID(){
+        return id;
+    }
+    public String getUsername(){
+        return username;
+    }
 }
