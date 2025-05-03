@@ -47,7 +47,7 @@ export default function CreateListing() {
         data.append('image1', formData.image1)
         data.append('image2', formData.image2)
         data.append('image3', formData.image3)
-        data.append('email', localStorage.getItem('userEmail')) // TODO Change to session storage of user ID
+        data.append('email', localStorage.getItem('userEmail'))
         
         try {
             const response = await fetch("/create-listing-servlet", {
@@ -208,10 +208,40 @@ export default function CreateListing() {
                     </div>
                     <div className="col-9 mb-3">
                         <div className="row gap-3">
-                            <CustomFileInput onChange={(file) => { handleImgChange("image1", file) }} />
-                            <CustomFileInput onChange={(file) => { handleImgChange("image2", file) }} />
-                            <CustomFileInput onChange={(file) => { handleImgChange("image3", file) }} />
-                        </div>
+                            <input
+                                type="text"
+                                className="form-control rounded-3"
+                                id="name"
+                                name="image1"
+                                value={formData.image1}
+                                onChange={handleChange}
+                                placeholder='Enter thumbnail photo URL'
+                                autoComplete='off'
+                                required
+                            />
+                            <input
+                                type="text"
+                                className="form-control rounded-3"
+                                id="name"
+                                name="image2"
+                                value={formData.image2}
+                                onChange={handleChange}
+                                placeholder='Enter photo 2 URL'
+                                autoComplete='off'
+                                required
+                            />
+                            <input
+                                type="text"
+                                className="form-control rounded-3"
+                                id="name"
+                                name="image3"
+                                value={formData.image3}
+                                onChange={handleChange}
+                                placeholder='Enter photo 3 URL'
+                                autoComplete='off'
+                                required
+                            />
+                            </div>
                     </div>
                     <div className='d-flex justify-content-start align-items-center'>
                         <button type="submit" id='custom-btn' className="btn mb-3 fs-6 py-2 px-4 fw-bold" disabled={isLoading}>
