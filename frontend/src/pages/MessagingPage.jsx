@@ -1,86 +1,24 @@
 // src/pages/MessagingPage.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/MessagingPage.css';
 import ConversationList from '../components/ConversationList';
 import MessageBubble from '../components/MessageBubble';
 
-const dummyConversations = [
-  {
-    otherUserId: 1,
-    otherUserName: "LebronFan42069"
-  },
-  {
-    otherUserId: 2,
-    otherUserName: "Deez"
-    
-  },
-  {
-    otherUserId: 3,
-    otherUserName: "Bot1"
-  },
-  {
-    otherUserId: 4,
-    otherUserName: "Bot2"
-  },
-];
-
-const dummyMessages = {
-  1: [
-    {
-      text: "Hey, is this still available?",
-      senderId: 1,
-      timestamp: "10:30 AM"
-    },
-    {
-      text: "Yes, it is!",
-      senderId: 2,
-      timestamp: "10:31 AM"
-    },
-    {
-      text: "Cool, let me know when you're free!",
-      senderId: 1,
-      timestamp: "10:32 AM"
-    }
-  ],
-  2: [
-    {
-      text: "Appreciate the help!",
-      senderId: 3,
-      timestamp: "Yesterday"
-    },
-    {
-      text: "No problem, let me know if you have questions.",
-      senderId: 1,
-      timestamp: "Yesterday"
-    }
-  ],
-  3: [
-    {
-      text: "Hey! I'm interested in the listing.",
-      senderId: 4,
-      timestamp: "Today, 9:00 AM"
-    },
-    {
-      text: "?",
-      senderId: 4,
-      timestamp: "Today, 9:05 AM"
-    }
-  ],
-  4: [
-    {
-      text: "Is it still available?",
-      senderId: 5,
-      timestamp: "Today, 11:00 AM"
-    }
-  ]
-};
-
 export default function MessagingPage() {
   const YOUR_USER_ID = 1;
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const [messages, setMessages]             = useState(dummyMessages);
-  const [messageText, setMessageText]       = useState("");
 
+  const [conversations, setConversations] = useState([]);
+  const [messages, setMessages] = useState({});
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messageText, setMessageText] = useState("");
+
+  useEffect(() => {
+    fetch(`/get-conversation-servlet?yourUserID=${YOUR_USER_ID}`)
+      .then(res => res.json())
+      .then(data => setConversations(data))
+      .catch(err => console.error("Failed to fetch conversations:", err));
+  }, []);
+  
   const handleSend = () => {
       if (!messageText.trim() || !selectedConversation) return;
 
@@ -103,13 +41,10 @@ export default function MessagingPage() {
    return (
        <div className="messaging-page">
          <div className="sidebar">
-           <ConversationList
-             conversations={dummyConversations.map(conv => ({
-               ...conv,
-               otherUserName: conv.otherUserName
-             }))}
-             onSelect={setSelectedConversation}
-           />
+         <ConversationList
+            conversations={conversations}
+            onSelect={setSelectedConversation}
+          />
          </div>
 
          <div className="chat-area">

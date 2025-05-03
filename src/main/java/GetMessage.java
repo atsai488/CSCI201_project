@@ -86,13 +86,11 @@ public class GetMessage extends HttpServlet {
 			}
 
 			//get messages in order of timestamp
-			String lastMessage = "";
 			ArrayList<String> messageList = new ArrayList<>();
 			while (!messageHeap.isEmpty()) {
 				Message message = messageHeap.poll();
 				String jsonMessage = "{\"text\": \"" + message.getText() + "\", \"senderId\": " + message.getSenderId() + ", \"timestamp\": \"" + message.getTimestamp() + "\"}";
 				messageList.add(jsonMessage);
-				lastMessage = message.getText();
 			}
 			String jsonArray = String.join(",", messageList);
 			String jsonResponse = String.format("{\"otherUserId\": %s, \"messages\": [%s]}", receiverID, jsonArray);
