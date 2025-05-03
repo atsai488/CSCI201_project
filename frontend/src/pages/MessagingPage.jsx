@@ -18,6 +18,27 @@ export default function MessagingPage() {
       .then(data => setConversations(data))
       .catch(err => console.error("Failed to fetch conversations:", err));
   }, []);
+
+  useEffect(() => {
+    if (!selectedConversation) return;
+    const userEmail = localStorage.getItem("email");
+    if (!userEmail) return;
+  
+    const fetchMessages = () => {
+      fetch(`/get-messages-servlet?email=${encodeURIComponent(userEmail)}&otherUserID=${selectedConversation.otherUserId}`)
+        .then(res => res.json())
+        .then(data => {
+          setMessages(data.messages);
+        })
+        .catch(err => console.error("Failed to fetch messages:", err));
+    };
+  
+    fetchMessages();
+  
+    const intervalId = setInterval(fetchMessages, 5000); 
+  
+    return () => clearInterval(intervalId); 
+  }, [selectedConversation]);  
   
   const handleSend = () => {
       if (!messageText.trim() || !selectedConversation) return;
