@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class InitialRedirect {
-    @GetMapping("/")
+public class HomeRedirect {
+    @GetMapping("/home")
     public String index() {
-        return "login";
+        return "forward:/index.html";
     }
 }
