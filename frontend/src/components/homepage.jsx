@@ -3,58 +3,62 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../css/style.css'; 
 
 export default function Homepage() {
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState('guest');
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [listings, setListings] = useState([]);
   
   const viewListing = (listing) => {
-  	window.location.href = `/listing/${listing.id}`;
+    window.location.href = `/listing/${listing.id}`;
   }
 
   const fetchInitialListings = async () => {
-        try {
-          const response = await fetch('/default-listings-servlet');
-          if (response.error) throw new Error('Failed to fetch initial listings');
-          const data = await response.json();
-          setListings(data.listings || []);
-        } catch (error) {
-          console.error('Error fetching initial listings:', error);
-          setListings([]);
-        }
-      };
-  
+    try {
+      const response = await fetch('/default-listings-servlet');
+      if (response.error) throw new Error('Failed to fetch initial listings');
+      const data = await response.json();
+      setListings(data.listings || []);
+    } catch (error) {
+      console.error('Error fetching initial listings:', error);
+      setListings([]);
+    }
+  };
+
   useEffect(() => {
     fetchInitialListings();
-	
-	async function getUserRole() {
-		const email = localStorage.getItem("email");
-			if(!email){
-				window.location.href = "/login";
-			}
-			try {
-				const response = await fetch(`/get-user-role?email=${encodeURIComponent(email)}`);
-				if (response.error) throw new Error('Failed to fetch user role');
-				const data = await response.json();
-				if(data.role === "fail"){
-					// Do nothing, keep user role empty
-				}
-				else{
-					setUserRole(data.role);	
-				}
-			} catch (error) {
-				console.error('Error fetching user role:', error);
-			}	
-	}
-	
-	getUserRole();
+
+    // Fetch user role but don't redirect automatically
+    async function getUserRole() {
+      const email = localStorage.getItem("email");
+      if (email) {
+        try {
+          const response = await fetch(`/get-user-role?email=${encodeURIComponent(email)}`);
+          if (response.error) throw new Error('Failed to fetch user role');
+          const data = await response.json();
+          if (data.role !== "fail") {
+            setUserRole(data.role);
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+        }
+      }
+    }
+
+    getUserRole();
   }, []);
+
+  const handleLogin = () => {
+    // When the login button is clicked, remove email from localStorage and redirect to login
+    localStorage.removeItem("email");
+    window.location.href = '/login';
+  };
+
   return (
     <>
       <header>
-		<div className="header" onClick={fetchInitialListings} style={{cursor: "pointer"}}>
-		  USC Marketplace
-		</div>
+        <div className="header" onClick={fetchInitialListings} style={{ cursor: "pointer" }}>
+          USC Marketplace
+        </div>
         <div className="nav-icons">
           <i
             id="addIcon"
@@ -65,32 +69,29 @@ export default function Homepage() {
           <i
             id="messageIcon"
             className="fa fa-comment"
-			style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
+            style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
             onClick={() => (window.location.href = '/messages')}
           />
-		  <i
-	        id="loginIcon"
-	        className="fa fa-sign-in-alt"
-			style={{ display: userRole ==='guest' ? 'inline-block' : 'none' }}
-	        onClick={() => {
-				localStorage.removeItem("email");
-				window.location.href = '/login';
-			}}
-	      />
-		  <i
-  	        id="registerIcon"
-  	        className="fa fa-user-plus"
-  			style={{ display: userRole ==='guest' ? 'inline-block' : 'none' }}
-  	        onClick={() => {
-				localStorage.removeItem("email");
-				window.location.href = '/register';
-			}}
-  	      />
+          <i
+            id="loginIcon"
+            className="fa fa-sign-in-alt"
+            style={{ display: userRole === 'guest' ? 'inline-block' : 'none' }}
+            onClick={handleLogin}
+          />
+          <i
+            id="registerIcon"
+            className="fa fa-user-plus"
+            style={{ display: userRole === 'guest' ? 'inline-block' : 'none' }}
+            onClick={() => {
+              localStorage.removeItem("email");
+              window.location.href = '/register';
+            }}
+          />
           <div className="profile-container">
             <i
               id="profileIcon"
               className="fa fa-user"
-			  style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
+              style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
               onClick={() => setProfileOpen(o => !o)}
             />
             {profileOpen && (
@@ -109,10 +110,10 @@ export default function Homepage() {
                   </li>
                   <li
                     id="logout"
-					onClick={() => {
-						localStorage.removeItem("email");
-						window.location.href = '/logout';
-					}}
+                    onClick={() => {
+                      localStorage.removeItem("email");
+                      window.location.href = '/logout';
+                    }}
                   >
                     <i className="fa fa-sign-out-alt" /> Logout
                   </li>
@@ -125,7 +126,7 @@ export default function Homepage() {
 
       <main>
         <div className="search-container">
-        <form
+          <form
             id="searchForm"
             onSubmit={async (e) => {
               e.preventDefault();
@@ -162,8 +163,8 @@ export default function Homepage() {
           {listings.length > 0 ? (
             listings.map(listing => (
               <div key={listing.id} className="listing-item"
-			  	   onClick={() => viewListing(listing)}
-				   style={{cursor: "pointer"}} >
+                onClick={() => viewListing(listing)}
+                style={{ cursor: "pointer" }}>
                 <img
                   src={listing.image1}
                   alt={listing.product_name}
