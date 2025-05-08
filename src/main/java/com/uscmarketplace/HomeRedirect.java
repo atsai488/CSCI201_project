@@ -7,6 +7,6 @@ import org.springframework.stereotype.Controller;
 public class HomeRedirect {
     @GetMapping("/home")
     public String index() {
-        return "forward:/index.html";
+        return "home";
     }
 }
