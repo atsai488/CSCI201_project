@@ -39,7 +39,7 @@ public class RatingServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // ==== STUB SESSION-USER FOR TESTING ====
+        // ==== STUB SESSION-USER FOR TESTING (buyerId is set to default 1 here, will need to grab it from the table using email) ====
         Long buyerId = (Long) req.getSession().getAttribute("userId");
         if (buyerId == null) {
             buyerId = 1L;
