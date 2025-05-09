@@ -16,9 +16,9 @@ create table Product(
     product_name varchar(100) not null,
     price float not null,
     descript varchar(250) not null,
-    image1 varchar(500) not null,
-    image2 varchar(500) not null,
-    image3 varchar(500) not null,
+    image1 varchar(2083) not null,
+    image2 varchar(2083) not null,
+    image3 varchar(2083) not null,
     category varchar(100) not null,
     sellerID int not null,
     foreign key (sellerID) references Users(SID)
