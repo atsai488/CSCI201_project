@@ -91,35 +91,21 @@ export default function Homepage() {
             <i
               id="profileIcon"
               className="fa fa-user"
-              style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
-              onClick={() => setProfileOpen(o => !o)}
+              style={{ display: userRole !== 'guest' ? 'inline-block' : 'none', marginRight: '16px' }}
+              onClick={() =>
+                window.location.href =
+                  userRole === 'seller' ? '/selleraccount' : '/buyeraccount'
+              }
             />
-            {profileOpen && (
-              <div id="profileDropdown" className="dropdown">
-                <ul>
-                  <li
-                    id="goToProfile"
-                    onClick={() =>
-                      (window.location.href =
-                        userRole === 'seller'
-                          ? '/selleraccount'
-                          : '/buyeraccount')
-                    }
-                  >
-                    <i className="fa fa-user-circle" /> Go to Profile
-                  </li>
-                  <li
-                    id="logout"
-                    onClick={() => {
-                      localStorage.removeItem("email");
-                      window.location.href = '/logout';
-                    }}
-                  >
-                    <i className="fa fa-sign-out-alt" /> Logout
-                  </li>
-                </ul>
-              </div>
-            )}
+            <i
+              id="logoutIcon"
+              className="fa fa-sign-out-alt"
+              style={{ display: userRole !== 'guest' ? 'inline-block' : 'none' }}
+              onClick={() => {
+                localStorage.removeItem('email');
+                window.location.href = '/login'; // go back to login page
+              }}
+            />
           </div>
         </div>
       </header>
