@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>WS Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+  <h1>WebSocket Test</h1>
+  <script>
+    const socket = new SockJS('/ws-chat');
+    const client = Stomp.over(socket);
+
+    client.connect({},
+      frame => {
+        console.log('✅ STOMP connected:', frame);
+        client.subscribe('/topic/messages.1', msg => {
+          console.log('📥 Got message:', JSON.parse(msg.body));
+        });
+        // send a test
+        client.send('/app/send', {}, JSON.stringify({
+          text:       'Test over WS',
+          senderId:   2,
+          receiverId: 1,
+          timestamp:  new Date().toISOString()
+        }));
+      },
+      error => console.error('🔴 STOMP error', error)
+    );
+  </script>
+</body>
+</html>

@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,104 +41,68 @@ public class GetMessage extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-		response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-		response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+	@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
 
-		
-		String email = request.getParameter("email");
-		String receiverID = request.getParameter("otherUserID");
-		PrintWriter out = response.getWriter();
-		String senderID = "1";
-		Connection conn = null;
-		Statement st = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			String sql = "SELECT SID from Users where email = ?;";
-			ps = conn.prepareStatement(sql);
-			ps.setString(1, email);
-			rs = ps.executeQuery();
-			if (rs.next()){
-				senderID = rs.getString("SID");
-			}
-			
-			
-			sql = "SELECT message, timeStamp FROM Messages WHERE senderID = ? AND receiverID = ?;";
-			ps = conn.prepareStatement(sql);
-			ps.setInt(1, Integer.parseInt(senderID));
-			ps.setInt(2, Integer.parseInt(receiverID));
-			rs = ps.executeQuery();
-			PriorityQueue<Message> messageHeap = new PriorityQueue<Message>(new Comparator<Message>() {
-				@Override
-				public int compare(Message m1, Message m2) {
-					Timestamp t1 = Timestamp.valueOf(m1.getTimestamp());
-					Timestamp t2 = Timestamp.valueOf(m2.getTimestamp());
-					return t1.compareTo(t2);
-				}
-			});
-		
-			while (rs.next()) {
-				Message message = new Message(rs.getString("message"), Integer.parseInt(senderID), rs.getString("timeStamp"));
-				messageHeap.add(message);
-			}
-			
-			//now get messages that were sent to the senderID from the receiverID
-			sql = "SELECT message, timeStamp FROM Messages WHERE receiverID = ? AND senderID = ?";
-			ps = conn.prepareStatement(sql);
-			ps.setInt(1, Integer.parseInt(senderID));
-			ps.setInt(2, Integer.parseInt(receiverID));
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				Message message = new Message(rs.getString("message"), Integer.parseInt(senderID), rs.getString("timeStamp"));
-				messageHeap.add(message);
-			}
+  // CORS
+  response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-			//get messages in order of timestamp
-			ArrayList<String> messageList = new ArrayList<>();
-			while (!messageHeap.isEmpty()) {
-				Message message = messageHeap.poll();
-				String jsonMessage = "{\"text\": \"" + message.getText() + "\", \"senderId\": " + message.getSenderId() + ", \"timestamp\": \"" + message.getTimestamp() + "\"}";
-				messageList.add(jsonMessage);
-			}
-			String jsonArray = String.join(",", messageList);
-			String jsonResponse = String.format("{\"otherUserId\": %s, \"messages\": [%s]}", receiverID, jsonArray);
+  // 1️⃣ Read the correct params
+  String senderID   = request.getParameter("yourUserID");
+  String receiverID = request.getParameter("otherUserID");
 
-			// Send the response
-			out.write(jsonResponse);
-			out.flush();
-			
-		} catch (SQLException sqle) {
-			out.write("{\"error\": \"" + sqle.getMessage() + "\"}");
-			out.flush();
-		} catch (ClassNotFoundException e) {
-			out.write("{\"error\": \"" + e.getMessage() + "\"}");
-			out.flush();
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (st != null) {
-					st.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException sqle) {
-				System.out.println("sqle: " + sqle.getMessage());
-			}
-		}
-	
+  // 2️⃣ (optional) validate non-null, numeric…
 
-	}
+  PrintWriter out = response.getWriter();
+  Connection conn = null;
+  PreparedStatement ps = null;
+  ResultSet rs = null;
+  try {
+    Class.forName("com.mysql.cj.jdbc.Driver");
+    conn = DriverManager.getConnection(db, dbUsername, dbPassword);
+
+    // 3️⃣ Fetch messages in both directions
+    String sql = "SELECT message, timestamp, senderID FROM Messages "
+               + "WHERE (senderID = ? AND receiverID = ?) "
+               + "   OR (senderID = ? AND receiverID = ?)";
+    ps = conn.prepareStatement(sql);
+    int sid = Integer.parseInt(senderID);
+    int rid = Integer.parseInt(receiverID);
+    ps.setInt(1, sid);
+    ps.setInt(2, rid);
+    ps.setInt(3, rid);  // swapped for reverse direction
+    ps.setInt(4, sid);
+    rs = ps.executeQuery();
+
+    // 4️⃣ Build JSON array in chronological order
+    List<String> list = new ArrayList<>();
+    while (rs.next()) {
+      String text = rs.getString("message");
+      String ts   = rs.getTimestamp("timestamp").toString();
+      int    from = rs.getInt("senderID");
+      list.add(String.format(
+        "{\"text\":\"%s\",\"senderId\":%d,\"timestamp\":\"%s\"}",
+        text, from, ts
+      ));
+    }
+    String msgs = String.join(",", list);
+    String json = String.format(
+      "{\"otherUserId\":%s,\"messages\":[%s]}",
+      receiverID, msgs
+    );
+
+    out.write(json);
+    out.flush();
+  } catch (Exception e) {
+    out.write("{\"error\":\""+e.getMessage()+"\"}");
+    out.flush();
+  } finally {
+    // close rs, ps, conn…
+  }
+}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub

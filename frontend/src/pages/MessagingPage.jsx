@@ -1,18 +1,23 @@
 // src/pages/MessagingPage.jsx
 import React, { useEffect, useState } from 'react';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import '../styles/MessagingPage.css';
 import ConversationList from '../components/ConversationList';
 import MessageBubble from '../components/MessageBubble';
 
 export default function MessagingPage() {
-  const YOUR_USER_ID = 1;
-
+  const stored = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+  const YOUR_USER_ID = stored ? parseInt(stored, 10) : 1;
+  console.log("stored", stored);
+   
   const [conversations, setConversations] = useState([]);
-  const [messages, setMessages] = useState({}); // ← object keyed by otherUserId
+  const [messages, setMessages] = useState({});  // object keyed by otherUserId
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messageText, setMessageText] = useState("");
+  const [stompClient, setStompClient] = useState(null);
 
-  // 1️⃣ Load all conversations on mount
+  // 1️ Load all conversations on mount
   useEffect(() => {
     fetch(`http://localhost:8080/get-conversation-servlet?yourUserID=${YOUR_USER_ID}`)
       .then(res => res.json())
@@ -20,12 +25,12 @@ export default function MessagingPage() {
       .catch(err => console.error("Failed to fetch conversations:", err));
   }, []);
 
-  // 2️⃣ When a conversation is selected, load its messages
+  // 2️ Load messages for selected conversation
   useEffect(() => {
     if (!selectedConversation) return;
 
     fetch(
-      `http://localhost:8080/get-messages-servlet?email=${localStorage.getItem("email")}&otherUserID=${selectedConversation.otherUserId}`
+      `http://localhost:8080/get-messages-servlet?yourUserID=${YOUR_USER_ID}&otherUserID=${selectedConversation.otherUserId}`
     )
       .then(res => res.json())
       .then(data => {
@@ -39,7 +44,35 @@ export default function MessagingPage() {
       .catch(err => console.error("Failed to fetch messages:", err));
   }, [selectedConversation]);
 
-  // 3️⃣ Send a new message
+  // WebSocket setup for real-time updates
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/ws-chat');
+    const client = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        console.log('✅ STOMP connected');
+        client.subscribe(`/topic/messages.${YOUR_USER_ID}`, ({ body }) => {
+          const msg = JSON.parse(body);
+          console.log('📥 Got via WS:', msg);
+          const convId = msg.senderId === YOUR_USER_ID
+            ? msg.receiverId
+            : msg.senderId;
+          setMessages(prev => ({
+            ...prev,
+            [convId]: [
+              ...(prev[convId] || []),
+              msg
+            ]
+          }));
+        });
+      }
+    });
+    client.activate();
+    setStompClient(client);
+    return () => client.deactivate();
+  }, []);
+
+  // 4️⃣ Send a new message
   const handleSend = () => {
     if (!messageText.trim() || !selectedConversation) return;
 
@@ -55,12 +88,13 @@ export default function MessagingPage() {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Append locally so UI updates immediately
           const newMsg = {
             text: messageText.trim(),
             senderId: YOUR_USER_ID,
-            timestamp: "Just now"
+            receiverId: selectedConversation.otherUserId,
+            timestamp: 'Just now'
           };
+          // Persist locally for immediate UI update
           setMessages(prev => ({
             ...prev,
             [selectedConversation.otherUserId]: [
@@ -68,12 +102,19 @@ export default function MessagingPage() {
               newMsg
             ]
           }));
+          // Publish over STOMP for real-time deliver
+          if (stompClient) {
+            stompClient.publish({
+              destination: '/app/send',
+              body: JSON.stringify(newMsg)
+            });
+          }
           setMessageText("");
         } else {
-          console.error("Send failed:", data.error);
+          console.error("Failed to send message:", data.error);
         }
       })
-      .catch(err => console.error("Send error:", err));
+      .catch(err => console.error("Send message failed:", err));
   };
 
   return (
@@ -96,7 +137,7 @@ export default function MessagingPage() {
             </div>
 
             <div className="chat-body-full">
-              {/* ← HERE we render the array for this conversation */}
+              {/* Render messages for this conversation */}
               {messages[selectedConversation.otherUserId]?.map((msg, idx) => (
                 <MessageBubble
                   key={idx}
@@ -128,4 +169,3 @@ export default function MessagingPage() {
     </div>
   );
 }
-
