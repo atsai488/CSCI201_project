@@ -9,6 +9,18 @@ export default function MessagingPage() {
   const stompClientRef = useRef(null);
   const [messageText, setMessageText] = useState("");
   const [YOUR_USER_ID, setYOUR_USER_ID] = useState(0);
+  function formatTimestamp(millis) {
+      const date = new Date(millis);
+      return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    }
   const getUserID = async () => {
     try {
       const email = localStorage.getItem('email');
@@ -57,6 +69,7 @@ export default function MessagingPage() {
     stompClient.subscribe('/topic/publicmessages', (message) => {
       try {
         const receivedMessage = JSON.parse(message.body);
+        receivedMessage.formattedTimestamp = formatTimestamp(receivedMessage.timestamp);
         setMessages(prev => [...prev, receivedMessage]);
       } catch (error) {
         console.error("Failed to parse received message:", error, "Message body:", message.body);
@@ -104,6 +117,11 @@ export default function MessagingPage() {
           <>
             <div className="chat-header-full">
               <h2>Message the community!</h2>
+              <div id="home">
+                <a href="/home">
+                  <button className="home-button">Home</button>
+                </a>
+              </div>
             </div>
 
             <div className="chat-body-full">

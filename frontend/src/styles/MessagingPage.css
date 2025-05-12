@@ -27,7 +27,7 @@
 
 .chat-header-full {
   padding: 10px;
-  background: #007bff;
+  background: #ca2b2b;
   color: white;
   display: flex;
   align-items: center;
@@ -75,4 +75,18 @@
 .chat-input button:disabled {
   background: #aaa;
   cursor: default;
+}
+
+.home-button{
+  background: #FFF;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+#home {
+  margin-left: auto;
 }
