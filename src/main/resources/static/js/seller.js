@@ -1,4 +1,6 @@
 (async () => {
+  const formatName = s => s.replace(/([a-z])([A-Z])/g, '$1 $2');
+
   // —— HEADER ICONS SETUP ——
   let headerRes = await fetch('/api/users/me');
   let role = 'guest';
@@ -17,32 +19,28 @@
   document.getElementById('messageIcon').onclick  = () => window.location.href = '/messages';
   document.getElementById('loginIcon').onclick    = () => { localStorage.removeItem('email'); window.location.href = '/login'; };
   document.getElementById('registerIcon').onclick = () => { localStorage.removeItem('email'); window.location.href = '/register'; };
-  document.getElementById('profileIcon').onclick  = () => window.location.href = role === 'seller' ? '/selleraccount' : '/buyeraccount';
   document.getElementById('logoutIcon').onclick   = () => { localStorage.removeItem('email'); window.location.href = '/login'; };
-  // — end header block —
 
-  // grab sellerId from URL
+  // —— 1) grab sellerId from URL ——
   const params   = new URLSearchParams(location.search);
   const sellerId = params.get('sellerId');
 
-  // fetch seller’s user info
+  // —— 2) fetch seller’s user info ——
   let res = await fetch(`/api/users/${sellerId}`);
   if (!res.ok) {
     document.getElementById('seller-name').textContent = 'Seller not found';
     return;
   }
   const user = await res.json();
-  // format "FirstLast" → "First Last"
-  const formattedName = user.username.replace(/([a-z])([A-Z])/g, '$1 $2');
-  document.getElementById('seller-name').textContent = formattedName;
+  document.getElementById('seller-name').textContent = formatName(user.username);
 
-  // fetch ratings summary + list
+  // —— 3) fetch ratings summary + list ——
   res = await fetch(`/api/ratings/seller/${sellerId}`);
   const { average, ratings } = await res.json();
   document.getElementById('seller-summary').textContent =
     `${average.toFixed(1)} ★ (${ratings.length} reviews)`;
 
-  // —— Render 1–5 distribution (always show all bars) ——  
+  // —— Render distribution bar chart (1–5) ——
   const distContainer = document.getElementById('rating-dist-container');
   const counts = {1:0,2:0,3:0,4:0,5:0};
   ratings.forEach(r => counts[r.stars]++);
@@ -62,7 +60,7 @@
     `;
   }).join('');
 
-  // buyer‑only review form
+  // —— 4) buyer‑only review form ——
   res = await fetch(`/api/users/me`);
   if (res.ok) {
     const me = await res.json();
@@ -81,13 +79,11 @@
       `;
       const stars = [...container.querySelectorAll('.star')];
       let selected = 0;
-
       stars.forEach(s => s.addEventListener('click', () => {
         selected = +s.dataset.value;
         stars.forEach(t => t.textContent = t.dataset.value <= selected ? '★' : '☆');
         container.querySelector('button').disabled = selected === 0;
       }));
-
       container.querySelector('form').addEventListener('submit', async e => {
         e.preventDefault();
         const comment = container.querySelector('#comment').value;
@@ -96,28 +92,24 @@
           headers: { 'Content-Type':'application/json' },
           body: JSON.stringify({ sellerId:+sellerId, stars:selected, comment })
         });
-        if (resp.ok) {
-          location.reload();
-        } else {
+        if (resp.ok) location.reload();
+        else {
           let errMsg = 'Failed to submit review';
-          try {
-            const err = await resp.json();
-            if (err.error) errMsg = err.error;
-          } catch {}
+          try { const err = await resp.json(); if (err.error) errMsg = err.error; } catch {}
           alert(errMsg);
         }
       });
     }
   }
 
-  // render the existing reviews
+  // —— 5) render the existing reviews ——
   const listEl = document.getElementById('ratings-list');
   if (!ratings.length) {
     listEl.textContent = 'No reviews yet.';
   } else {
     listEl.innerHTML = ratings.map(r => `
       <div class="rating-item">
-        <div class="buyer-name">${r.buyerUsername}</div>
+        <div class="buyer-name">${formatName(r.buyerUsername)}</div>
         <div class="star-display">
           ${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}
         </div>
@@ -126,4 +118,4 @@
       </div>
     `).join('');
   }
-})(); 
+})();
