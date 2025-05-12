@@ -1,0 +1,44 @@
+/* src/styles/MessagingPage.css */
+
+.messaging-page {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 300px;
+  max-width: 25%;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+}
+
+.empty-state {
+  margin: auto;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.chat-header-full {
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+.chat-header-full h2 {
+  margin: 0 0 0 10px;
+}
+
+.chat-body-full {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
