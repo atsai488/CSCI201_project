@@ -3,41 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <title>Seller Profile</title>
-  <!-- FontAwesome -->
+  <link rel="stylesheet" href="frontend/src/css/styles.css" />
+  <link rel="stylesheet" href="/css/ratings.css" />
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         integrity="sha512-…" crossorigin="anonymous" />
-
-  <link rel="stylesheet" href="frontend/src/css/styles.css" />
-
-  <!-- Ratings‑specific styles -->
-  <link rel="stylesheet" href="/css/ratings.css" />
-
 </head>
 <body>
   <header>
     <div class="header" onclick="window.location.href='/home'" style="cursor:pointer">
       USC Marketplace
     </div>
-  
     <div class="nav-icons">
-      <i id="addIcon" class="fa fa-plus"></i>
-  
-      <i id="messageIcon" class="fa fa-comment"></i>
-  
-      <i id="loginIcon"    class="fa fa-sign-in-alt"></i>
-      <i id="registerIcon" class="fa fa-user-plus"></i>
-  
+      <i id="addIcon"       class="fa fa-plus"></i>
+      <i id="messageIcon"   class="fa fa-comment"></i>
+      <i id="loginIcon"     class="fa fa-sign-in-alt"></i>
+      <i id="registerIcon"  class="fa fa-user-plus"></i>
       <div class="profile-container">
         <i id="profileIcon" class="fa fa-user"></i>
-        
         <i id="logoutIcon"  class="fa fa-sign-out-alt"></i>
       </div>
     </div>
   </header>
-  
 
-  
+  <!-- 1) Seller’s own listings with delete “×” -->
+  <section id="seller-listings" class="seller-listings"></section>
+
+  <!-- 2) Ratings header/chart/form/list -->
   <main class="container">
     <div class="ratings-header">
       <div class="ratings-info">
@@ -46,7 +38,6 @@
       </div>
       <div id="rating-dist-container" class="ratings-dist"></div>
     </div>
-    
     <div id="rating-form-container"></div>
     <div id="ratings-list"></div>
   </main>
