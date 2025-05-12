@@ -8,7 +8,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Cookie;
 
 import java.sql.Connection;
@@ -18,15 +17,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@WebServlet("/login-servlet")
-public class LoginServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+@WebServlet("/get-user-id-servlet")
+public class GetUserID extends HttpServlet {
+	private static final long serialVersionUID = 2L;
 	
 	@Value("${spring.datasource.url}")
 	private String db;
@@ -37,62 +35,46 @@ public class LoginServlet extends HttpServlet {
 	@Value("${spring.datasource.password}")
 	private String dbPassword;
        
-    public LoginServlet() {
+    public GetUserID() {
         super();
         // TODO Auto-generated constructor stub
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
-		// Retrieving variables to verify log in
-		String email = request.getParameter("email");
-		String password = request.getParameter("password");
+		doPost(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
 		PrintWriter out = response.getWriter();
-		
-		if(email.equals("guest") && password.equals("guest")) {
-			out.write("guestSuccess");
-			return;
-		}
-		
-		BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
 		
 		Connection conn = null;
 		Statement st = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			
+            Class.forName("com.mysql.cj.jdbc.Driver");
 			conn = DriverManager.getConnection(db, dbUsername, dbPassword);
-			
-			ps = conn.prepareStatement("SELECT * FROM Users WHERE email = ?");
-			ps.setString(1, email);
-			rs = ps.executeQuery();
-			
-			if(rs.next()) {
-				String passwordHash = rs.getString("password");
-				if(bc.matches(password, passwordHash)) {
-					// added session attributes 
-					HttpSession session = request.getSession();
-					session.setAttribute("userId", rs.getLong("SID"));
-					session.setAttribute("email", email);
-					session.setAttribute("role", rs.getString("role"));
-
-					// Set userId in session
-					Long userId = rs.getLong("SID");
-					request.getSession().setAttribute("userId", userId);
-					out.println("success");
-				} else {
-					out.println("fail");
-				}
+			String sql = "SELECT SID FROM Users where email = ?;";
+            ps = conn.prepareStatement(sql);
+			ps.setString(1,request.getParameter("email"));
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+				int id = rs.getInt("SID");
+				response.setContentType("application/json");
+				out.print("{\"userId\":" + id + "}");
+            }
+			else{
+				out.print("{\"error\":-1}");
 			}
-
+			out.flush();			
 		} catch (SQLException sqle) {
-			System.out.println ("SQLException: " + sqle.getMessage());
+			out.println("{\"error\": \"An error occurred.\"}"); 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			out.println("{\"error\": \"An error occurred.\"}");
 		} finally {
 			try {
 				if (rs != null) {
@@ -113,8 +95,4 @@ public class LoginServlet extends HttpServlet {
 		}
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
 }

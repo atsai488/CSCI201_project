@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buyer Account - USC Marketplace</title>
+    <link rel="stylesheet" href="/css/listing.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 30px;
+        }
+
+        .profile-picture i {
+            font-size: 48px;
+            color: #800;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .profile-details {
+            margin-top: 20px;
+        }
+
+        .profile-detail {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 4px;
+        }
+
+        .profile-detail label {
+            font-weight: bold;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .profile-detail span {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: #800;
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header">
+            <a href="/index.html" class="home-link">USC Marketplace</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-picture">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h1 id="user-name">Loading...</h1>
+                </div>
+            </div>
+
+            <div class="profile-details">
+                <div class="profile-detail">
+                    <label>Username</label>
+                    <span id="username">Loading...</span>
+                </div>
+                <div class="profile-detail">
+                    <label>Email</label>
+                    <span id="email">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Fetch user data when the page loads
+        window.addEventListener('load', async () => {
+            try {
+                console.log('Fetching user profile...'); // Debug log
+                const response = await fetch('/api/user/profile');
+                console.log('Response status:', response.status); // Debug log
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.log('User not logged in, redirecting to login...'); // Debug log
+                        window.location.href = '/login';
+                        return;
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to fetch user data');
+                }
+                
+                const userData = await response.json();
+                console.log('Received user data:', userData); // Debug log
+                
+                // Update the DOM with user data
+                // Display full name by splitting username (e.g., JohnDoe -> John Doe)
+                const fullName = userData.username.replace(/([a-z])([A-Z])/g, '$1 $2');
+                document.getElementById('user-name').textContent = fullName;
+                document.getElementById('username').textContent = userData.username;
+                document.getElementById('email').textContent = userData.email;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                const container = document.querySelector('.profile-container');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <h2>Error Loading Profile</h2>
+                        <p>${error.message || 'There was a problem loading your profile information. Please try again later.'}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

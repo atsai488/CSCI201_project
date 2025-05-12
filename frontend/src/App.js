@@ -1,8 +1,12 @@
-import React from 'react';
-import Homepage from './components/homepage';
+// src/App.js
+import React from "react";
+import MessagingPage from "./pages/MessagingPage";
 
-function App() {
-  return <Homepage />;
+export default function App() {
+  return (
+    <>
+      <MessagingPage />
+    </>
+  )
 }
 
-export default App;

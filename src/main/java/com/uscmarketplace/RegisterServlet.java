@@ -86,6 +86,16 @@ public class RegisterServlet extends HttpServlet {
 			
 			ps.executeUpdate();
 			
+			// Get the user ID after insertion
+			ps = conn.prepareStatement("SELECT SID FROM Users WHERE email = ?");
+			ps.setString(1, email);
+			rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				Long userId = rs.getLong("SID");
+				request.getSession().setAttribute("userId", userId);
+			}
+			
 			out.println("success");
 			
 		} catch (SQLException sqle) {
