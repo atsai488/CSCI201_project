@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Account - USC Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .buyer-account {
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-icons i {
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .account-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .account-header {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .profile-picture {
+            color: #666;
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-info p {
+            margin: 0.5rem 0;
+            color: #666;
+        }
+
+        .account-sections {
+            display: grid;
+            gap: 2rem;
+        }
+
+        section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        section h2 {
+            margin-top: 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-list, .ratings-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .purchase-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .purchase-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .purchase-details h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .purchase-details p {
+            margin: 0.5rem 0;
+            color: #666;
+        }
+
+        .rating-item {
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .rating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-stars {
+            color: #ffd700;
+        }
+
+        .rating-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .rating-comment {
+            margin: 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="buyer-account">
+        <header>
+            <div class="header" onclick="window.location.href='/'">USC Marketplace</div>
+            <div class="nav-icons">
+                <i class="fa fa-comment" onclick="window.location.href='/messages'"></i>
+                <div class="profile-container">
+                    <i class="fa fa-user" onclick="window.location.href='/buyeraccount'"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="account-content">
+            <div class="account-header">
+                <div class="profile-section">
+                    <div class="profile-picture">
+                        <i class="fa fa-user-circle fa-5x"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h1 th:text="${user.name ?: 'Loading...'}">User Name</h1>
+                        <p class="email" th:text="${user.email}">user@example.com</p>
+                        <p class="join-date" th:text="'Member since ' + ${user.joinDate ?: 'Loading...'}">Member since 2024</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-sections">
+                <section class="purchase-history">
+                    <h2><i class="fa fa-shopping-bag"></i> Purchase History</h2>
+                    <div class="history-list">
+                        <div th:if="${purchaseHistory.empty}" class="no-history">
+                            <p>No purchase history available</p>
+                        </div>
+                        <div th:each="purchase : ${purchaseHistory}" class="purchase-item">
+                            <img th:src="${purchase.image}" th:alt="${purchase.productName}">
+                            <div class="purchase-details">
+                                <h3 th:text="${purchase.productName}">Product Name</h3>
+                                <p th:text="'Purchased on: ' + ${purchase.date}">Purchased on: Date</p>
+                                <p th:text="'Price: $' + ${purchase.price}">Price: $0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ratings-section">
+                    <h2><i class="fa fa-star"></i> Ratings & Reviews</h2>
+                    <div class="ratings-list">
+                        <div th:if="${ratings.empty}" class="no-ratings">
+                            <p>No ratings available</p>
+                        </div>
+                        <div th:each="rating : ${ratings}" class="rating-item">
+                            <div class="rating-header">
+                                <span class="rating-stars" th:text="${#strings.repeat('★', rating.stars) + #strings.repeat('☆', 5 - rating.stars)}">★★★★★</span>
+                                <span class="rating-date" th:text="${rating.date}">Date</span>
+                            </div>
+                            <p class="rating-comment" th:text="${rating.comment}">Rating comment</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
