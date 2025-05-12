@@ -1,11 +1,14 @@
 (async () => {
-  //grab sellerId from URL
+  // 1) grab sellerId from URL
   const params   = new URLSearchParams(location.search);
   const sellerId = params.get('sellerId');
 
-  // fetch seller’s user info
+  // 2) fetch seller’s user info
   let res = await fetch(`/api/users/${sellerId}`);
-  if (!res.ok) return document.getElementById('seller-name').textContent = 'Seller not found';
+  if (!res.ok) {
+    document.getElementById('seller-name').textContent = 'Seller not found';
+    return;
+  }
   const user = await res.json();
   document.getElementById('seller-name').textContent = user.username;
 
@@ -15,17 +18,20 @@
   document.getElementById('seller-summary').textContent =
     `${average.toFixed(1)} ★ (${ratings.length} reviews)`;
 
-  // if current user is a buyer, show the review form
+  // —— INSERTED HERE: check current user’s role ——
   res = await fetch(`/api/users/me`);
   if (res.ok) {
     const me = await res.json();
-    if (me.role === 'BUYER') {
+    // normalize to lower‑case so 'buyer' matches your ENUM
+    if (me.role.toLowerCase() === 'buyer') {
       const container = document.getElementById('rating-form-container');
       container.innerHTML = `
         <form id="rating-form">
-          <div class="star-picker">${[1,2,3,4,5].map(n =>
-            `<span class="star" data-value="${n}">☆</span>`
-          ).join('')}</div>
+          <div class="star-picker">
+            ${[1,2,3,4,5].map(n =>
+              `<span class="star" data-value="${n}">☆</span>`
+            ).join('')}
+          </div>
           <textarea id="comment" placeholder="Write a review…"></textarea>
           <button type="submit" disabled>Submit</button>
         </form>
@@ -52,8 +58,9 @@
       });
     }
   }
+  // — end of inserted block —
 
-  // render the existing reviews
+  // 4) render the existing reviews
   const listEl = document.getElementById('ratings-list');
   if (!ratings.length) {
     listEl.textContent = 'No reviews yet.';

@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Cookie;
 
 import java.sql.Connection;
@@ -16,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -71,15 +73,18 @@ public class LoginServlet extends HttpServlet {
 			if(rs.next()) {
 				String passwordHash = rs.getString("password");
 				if(bc.matches(password, passwordHash)) {
+					// added session attributes 
+					HttpSession session = request.getSession();
+					session.setAttribute("userId",    rs.getLong("SID"));
+					session.setAttribute("email",     email);
+					session.setAttribute("role",      rs.getString("role"));
+
 					out.println("success");
-				}
-				else {
+				} else {
 					out.println("fail");
 				}
 			}
-			else {
-				out.println("fail");
-			}
+
 		} catch (SQLException sqle) {
 			System.out.println ("SQLException: " + sqle.getMessage());
 		} catch (ClassNotFoundException e) {
