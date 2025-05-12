@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.uscmarketplace.dto;
 
 public class RatingDto {
   private Long sellerId;
