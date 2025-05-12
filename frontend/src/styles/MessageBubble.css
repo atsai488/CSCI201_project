@@ -1,0 +1,59 @@
+/* src/styles/MessageBubble.css */
+
+.message-bubble {
+  display: flex;
+  margin: 10px;
+  max-width: 70%;
+}
+
+.message-bubble.other {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.message-bubble.own {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  margin-left: auto;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+
+.message-content {
+  background-color: #e1e1e1;
+  border-radius: 15px;
+  padding: 0px 10px 0px 10px;
+  position: relative;
+}
+
+.message-bubble.own .message-content {
+  background-color: #007bff;
+  color: white;
+}
+
+.timestamp .other-timstamp{
+  font-size: 0.75em;
+  color: #666;
+  margin-bottom: 4px;
+  display: block;
+  text-align: right;
+}
+
+.timestamp .own-timstamp{
+  font-size: 0.75em;
+  color: #FFF;
+  margin-bottom: 4px;
+  display: block;
+  text-align: right;
+}
+
+.message-text
+{
+	margin: 4px;
+}
+

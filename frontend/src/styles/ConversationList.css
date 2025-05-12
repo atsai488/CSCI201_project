@@ -1,0 +1,52 @@
+/* src/components/ConversationList.css */
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+  transition: background 0.2s;
+}
+
+.conversation-item:hover {
+  background: #f0f0f0;
+}
+
+.conv-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.conv-info {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.conv-info > div:first-child {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-last-message {
+  font-size: 0.875rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
