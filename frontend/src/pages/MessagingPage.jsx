@@ -5,13 +5,34 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 
 export default function MessagingPage() {
-  const YOUR_USER_ID = 1;
-
   const [messages, setMessages] = useState([]);
   const stompClientRef = useRef(null);
   const [messageText, setMessageText] = useState("");
+  const [YOUR_USER_ID, setYOUR_USER_ID] = useState(0);
+  const getUserID = async () => {
+    try {
+      const email = localStorage.getItem('email');
+      const response = await fetch(`/get-user-id-servlet?email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (data.userId !== undefined) {
+        console.log("User ID:", data.userId);
+        setYOUR_USER_ID(data.userId);
+      } else {
+        throw new Error("No userId in response");
+      }
+    } catch (error) {
+      console.error("Failed to get user ID:", error);
+      setYOUR_USER_ID(0);
+    }
+  };
+
 
   useEffect(() => {
+    getUserID();
     fetch("http://localhost:8080/get-messages-servlet")
       .then(res => res.json())
       .then(data => {
@@ -22,73 +43,68 @@ export default function MessagingPage() {
       .catch(err => console.error("Failed to fetch messages:", err));
   }, []);
 
-  useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/chat');
+ useEffect(() => {
+  const socket = new SockJS('http://localhost:8080/chat');
+  const stompClient = new Client({
+    webSocketFactory: () => socket,
+    debug: (str) => console.log('STOMP: ' + str),
+    reconnectDelay: 5000,
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+  });
 
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      debug: (str) => {
-        console.log('STOMP: ' + str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
-    stompClient.onConnect = (frame) => {
-      console.log('Connected: ' + frame);
-
-      stompClient.subscribe('/topic/publicmessages', (message) => {
-        try {
-          const receivedMessage = JSON.parse(message.body);
-          setMessages(prev => [...prev, receivedMessage]);
-        } catch (error) {
-          console.error("Failed to parse received message:", error, "Message body:", message.body);
-        }
-      });
-    };
-
-    stompClient.onError = (err) => {
-      console.error('STOMP error', err);
-    };
-
-    stompClient.activate();
-
+  stompClient.onConnect = (frame) => {
+    console.log('Connected: ' + frame);
+    
     stompClientRef.current = stompClient;
 
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.deactivate();
-        console.log("STOMP client disconnected");
+    stompClient.subscribe('/topic/publicmessages', (message) => {
+      try {
+        const receivedMessage = JSON.parse(message.body);
+        setMessages(prev => [...prev, receivedMessage]);
+      } catch (error) {
+        console.error("Failed to parse received message:", error, "Message body:", message.body);
       }
-    };
-  }, []);
+    });
+  };
+
+  stompClient.onError = (err) => {
+    console.error('STOMP error', err);
+  };
+
+  stompClient.activate();
+
+  return () => {
+    if (stompClientRef.current) {
+      stompClientRef.current.deactivate();
+      console.log("STOMP client disconnected");
+    }
+  };
+}, []);
 
   const sendMessage = () => {
-    if (!stompClientRef.current || !stompClientRef.current.connected) {
-      console.warn("STOMP client is not connected.");
-      return;
-    }
+  console.log("Client ref:", stompClientRef.current);
+  console.log("Connected?", stompClientRef.current.connected);
+  console.log("Publish function:", stompClientRef.current.publish);
+  const messageContent = messageText.trim();
+  if (!messageContent) {
+    return;
+  }
 
-    const messageContent = messageText.trim();
-    if (!messageContent) {
-      return;
-    }
-
-    const newMsg = {
-      text: messageContent,
-      senderId: YOUR_USER_ID,
-      timestamp: Date.now()
-    };
-
-    stompClientRef.current.send(
-      "/app/chat.sendMessage",
-      {},
-      JSON.stringify(newMsg)
-    );
-
-    setMessageText("");
+  const newMsg = {
+    text: messageContent,
+    senderId: YOUR_USER_ID,
+    timestamp: Date.now()
   };
+
+  stompClientRef.current.publish({
+    destination: "/app/chat.sendMessage",
+    body: JSON.stringify(newMsg)
+  });
+
+
+  setMessageText("");
+};
 
   return (
     <div className="messaging-page">

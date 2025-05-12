@@ -28,10 +28,8 @@ create table Messages (
     id int auto_increment primary key,
     message text not null,
     SenderID int not null,
-    ReceiverID int not null,
     timeStamp datetime not null,
-    foreign key (SenderID) references Users(SID),
-    foreign key (ReceiverID) references Users(SID)
+    foreign key (SenderID) references Users(SID)
 );
 
 -- fk stands for foreign key not for.. y'know what
