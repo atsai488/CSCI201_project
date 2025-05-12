@@ -3,25 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <title>Seller Profile</title>
-  <link rel="stylesheet" href="/css/listing.css" />
-  <!-- Ratings‑page overrides -->
+  <!-- FontAwesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-…" crossorigin="anonymous" />
+
+  <link rel="stylesheet" href="frontend/src/css/styles.css" />
+
+  <!-- Ratings‑specific styles -->
   <link rel="stylesheet" href="/css/ratings.css" />
+
 </head>
 <body>
-  <!-- TODO: NEEDS FIX; right now the header is not properly formatted. -->
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/index.html" class="logo">USC Marketplace</a>
-      <nav>
-        <a href="/logout" class="logout-button">Logout</a>
-      </nav>
+  <header>
+    <div class="header" onclick="window.location.href='/'" style="cursor:pointer">
+      USC Marketplace
+    </div>
+  
+    <div class="nav-icons">
+      <i id="addIcon" class="fa fa-plus"></i>
+  
+      <i id="messageIcon" class="fa fa-comment"></i>
+  
+      <i id="loginIcon"    class="fa fa-sign-in-alt"></i>
+      <i id="registerIcon" class="fa fa-user-plus"></i>
+  
+      <div class="profile-container">
+        <i id="profileIcon" class="fa fa-user"></i>
+        
+        <i id="logoutIcon"  class="fa fa-sign-out-alt"></i>
+      </div>
     </div>
   </header>
+  
 
   
   <main class="container">
-    <h1 id="seller-name">Loading…</h1>
-    <div id="seller-summary">Loading rating…</div>
+    <div class="ratings-header">
+      <div class="ratings-info">
+        <h1 id="seller-name"></h1>
+        <p id="seller-summary"></p>
+      </div>
+      <div id="rating-dist-container" class="ratings-dist"></div>
+    </div>
+    
     <div id="rating-form-container"></div>
     <div id="ratings-list"></div>
   </main>

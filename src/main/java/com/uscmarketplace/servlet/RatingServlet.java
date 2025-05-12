@@ -19,24 +19,27 @@ import java.sql.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @WebServlet("/api/ratings")
+@Component
 public class RatingServlet extends HttpServlet {
-	@Value("${spring.datasource.url}")
-	private String db;
-	
-	@Value("${spring.datasource.username}")
-	private String dbUsername;
-	
-	@Value("${spring.datasource.password}")
-	private String dbPassword;
+    @Value("${spring.datasource.url}")
+    private String db;
+
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
 
     private final ObjectMapper mapper = new ObjectMapper()
         .registerModule(new JavaTimeModule())
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, ServletException {
         // CORS (if needed)
         resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -45,14 +48,13 @@ public class RatingServlet extends HttpServlet {
         // parse incoming JSON
         RatingDto dto = mapper.readValue(req.getReader(), RatingDto.class);
 
-        // stub session‑user for now; replace with real auth later
+        // get logged‑in buyerId from session (fallback stub)
         Long buyerId = (Long) req.getSession().getAttribute("userId");
         if (buyerId == null) {
-          buyerId = 1L;
-          req.getSession().setAttribute("userId", buyerId);
+            buyerId = 1L;
+            req.getSession().setAttribute("userId", buyerId);
         }
 
-        // insert the new rating, then fetch it back for the response
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection(db, dbUsername, dbPassword)) {
@@ -67,25 +69,27 @@ public class RatingServlet extends HttpServlet {
                     ps.setInt(3, dto.getStars());
                     ps.setString(4, dto.getComment());
                     ps.executeUpdate();
+                }
 
-                    // get generated rating ID
-                    try (ResultSet keys = ps.getGeneratedKeys()) {
-                      if (!keys.next()) {
-                        throw new SQLException("No ID returned for new rating");
-                      }
-                      long ratingId = keys.getLong(1);
-
-                      // 2) SELECT for response
-                      String fetchSql = """
-                        SELECT r.id, r.stars, r.comment, r.createdAt, u.username
-                        FROM Ratings r
-                        JOIN Users u ON r.buyerID = u.SID
-                        WHERE r.id = ?
-                        """;
-                      try (PreparedStatement ps2 = conn.prepareStatement(fetchSql)) {
-                        ps2.setLong(1, ratingId);
-                        try (ResultSet rs = ps2.executeQuery()) {
-                          if (rs.next()) {
+                // 2) FETCH the newly inserted row for response
+                String fetchSql = """
+                  SELECT r.id, r.stars, r.comment, r.createdAt, u.username
+                  FROM Ratings r
+                  JOIN Users u ON r.buyerID = u.SID
+                  WHERE r.buyerID = ? AND r.sellerID = ?
+                    AND r.createdAt = (
+                      SELECT MAX(createdAt)
+                      FROM Ratings
+                      WHERE buyerID = ? AND sellerID = ?
+                    )
+                  """;
+                try (PreparedStatement ps2 = conn.prepareStatement(fetchSql)) {
+                    ps2.setLong(1, buyerId);
+                    ps2.setLong(2, dto.getSellerId());
+                    ps2.setLong(3, buyerId);
+                    ps2.setLong(4, dto.getSellerId());
+                    try (ResultSet rs = ps2.executeQuery()) {
+                        if (rs.next()) {
                             RatingResponseDto outDto = new RatingResponseDto(
                               rs.getLong("id"),
                               rs.getInt("stars"),
@@ -95,18 +99,26 @@ public class RatingServlet extends HttpServlet {
                             );
                             resp.setContentType("application/json");
                             try (PrintWriter writer = resp.getWriter()) {
-                              mapper.writeValue(writer, outDto);
+                                mapper.writeValue(writer, outDto);
                             }
-                          }
                         }
-                      }
                     }
                 }
             }
-        } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        catch (SQLIntegrityConstraintViolationException ice) {
+            // Unique constraint on (buyerID,sellerID) violated
+            resp.setStatus(HttpServletResponse.SC_CONFLICT); // 409
+            resp.setContentType("application/json");
             try (PrintWriter writer = resp.getWriter()) {
-              writer.write("{\"error\":\"" + e.getMessage().replace("\"","\\\"") + "\"}");
+                writer.write("{\"error\":\"You already submitted a review for this seller\"}");
+            }
+        }
+        catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.setContentType("application/json");
+            try (PrintWriter writer = resp.getWriter()) {
+                writer.write("{\"error\":\"" + e.getMessage().replace("\"","\\\"") + "\"}");
             }
         }
     }
