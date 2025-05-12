@@ -19,13 +19,11 @@ export default function MessagingPage() {
       const data = await response.json();
 
       if (data.userId !== undefined) {
-        console.log("User ID:", data.userId);
         setYOUR_USER_ID(data.userId);
       } else {
         throw new Error("No userId in response");
       }
     } catch (error) {
-      console.error("Failed to get user ID:", error);
       setYOUR_USER_ID(0);
     }
   };
@@ -47,14 +45,12 @@ export default function MessagingPage() {
   const socket = new SockJS('http://localhost:8080/chat');
   const stompClient = new Client({
     webSocketFactory: () => socket,
-    debug: (str) => console.log('STOMP: ' + str),
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
   });
 
   stompClient.onConnect = (frame) => {
-    console.log('Connected: ' + frame);
     
     stompClientRef.current = stompClient;
 
@@ -77,15 +73,11 @@ export default function MessagingPage() {
   return () => {
     if (stompClientRef.current) {
       stompClientRef.current.deactivate();
-      console.log("STOMP client disconnected");
     }
   };
 }, []);
 
   const sendMessage = () => {
-  console.log("Client ref:", stompClientRef.current);
-  console.log("Connected?", stompClientRef.current.connected);
-  console.log("Publish function:", stompClientRef.current.publish);
   const messageContent = messageText.trim();
   if (!messageContent) {
     return;

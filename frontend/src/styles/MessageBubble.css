@@ -36,9 +36,17 @@
   color: white;
 }
 
-.timestamp {
+.timestamp .other-timstamp{
   font-size: 0.75em;
   color: #666;
+  margin-bottom: 4px;
+  display: block;
+  text-align: right;
+}
+
+.timestamp .own-timstamp{
+  font-size: 0.75em;
+  color: #FFF;
   margin-bottom: 4px;
   display: block;
   text-align: right;
