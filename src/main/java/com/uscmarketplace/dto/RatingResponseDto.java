@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.uscmarketplace.dto;
 
 import java.time.Instant;
 
