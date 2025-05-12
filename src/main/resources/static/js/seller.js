@@ -1,13 +1,19 @@
 (async () => {
+  // ——— 0) helper to split camelCase names ———
   const formatName = s => s.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-  // —— HEADER ICONS SETUP ——
-  let headerRes = await fetch('/api/users/me');
-  let role = 'guest';
+  // ——— 1) grab sellerId from URL ——————————
+  const params   = new URLSearchParams(location.search);
+  const sellerId = params.get('sellerId');
+
+  // ——— 2) HEADER ICONS (incl. profile redirect) ———
+  let headerRes = await fetch('/api/users/me'),
+      role      = 'guest';
   if (headerRes.ok) {
     const me = await headerRes.json();
     role = me.role.toLowerCase();
   }
+
   document.getElementById('addIcon').style.display      = role === 'seller' ? 'inline-block' : 'none';
   document.getElementById('messageIcon').style.display  = role !== 'guest'  ? 'inline-block' : 'none';
   document.getElementById('loginIcon').style.display    = role === 'guest'  ? 'inline-block' : 'none';
@@ -19,13 +25,10 @@
   document.getElementById('messageIcon').onclick  = () => window.location.href = '/messages';
   document.getElementById('loginIcon').onclick    = () => { localStorage.removeItem('email'); window.location.href = '/login'; };
   document.getElementById('registerIcon').onclick = () => { localStorage.removeItem('email'); window.location.href = '/register'; };
+  document.getElementById('profileIcon').onclick  = () => window.location.href = `/selleraccount?sellerId=${sellerId}`;
   document.getElementById('logoutIcon').onclick   = () => { localStorage.removeItem('email'); window.location.href = '/login'; };
 
-  // —— 1) grab sellerId from URL ——
-  const params   = new URLSearchParams(location.search);
-  const sellerId = params.get('sellerId');
-
-  // —— 2) fetch seller’s user info ——
+  // ——— 3) fetch seller’s user info ——————————
   let res = await fetch(`/api/users/${sellerId}`);
   if (!res.ok) {
     document.getElementById('seller-name').textContent = 'Seller not found';
@@ -34,18 +37,16 @@
   const user = await res.json();
   document.getElementById('seller-name').textContent = formatName(user.username);
 
-  // —— 3) fetch ratings summary + list ——
+  // ——— 4) fetch ratings summary + distribution chart ———
   res = await fetch(`/api/ratings/seller/${sellerId}`);
   const { average, ratings } = await res.json();
   document.getElementById('seller-summary').textContent =
     `${average.toFixed(1)} ★ (${ratings.length} reviews)`;
 
-  // —— Render distribution bar chart (1–5) ——
   const distContainer = document.getElementById('rating-dist-container');
   const counts = {1:0,2:0,3:0,4:0,5:0};
   ratings.forEach(r => counts[r.stars]++);
   const total = ratings.length;
-
   distContainer.innerHTML = [5,4,3,2,1].map(star => {
     const cnt = counts[star];
     const pct = total > 0 ? Math.round(cnt / total * 100) : 0;
@@ -60,7 +61,7 @@
     `;
   }).join('');
 
-  // —— 4) buyer‑only review form ——
+  // ——— 5) buyer‑only “write a review” form ———
   res = await fetch(`/api/users/me`);
   if (res.ok) {
     const me = await res.json();
@@ -89,20 +90,20 @@
         const comment = container.querySelector('#comment').value;
         const resp = await fetch('/api/ratings', {
           method: 'POST',
-          headers: { 'Content-Type':'application/json' },
+          headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ sellerId:+sellerId, stars:selected, comment })
         });
-        if (resp.ok) location.reload();
+        if (resp.ok)      location.reload();
         else {
-          let errMsg = 'Failed to submit review';
-          try { const err = await resp.json(); if (err.error) errMsg = err.error; } catch {}
-          alert(errMsg);
+          let err = 'Failed to submit review';
+          try { const body = await resp.json(); if (body.error) err = body.error; } catch {}
+          alert(err);
         }
       });
     }
   }
 
-  // —— 5) render the existing reviews ——
+  // ——— 6) render existing reviews ——————————
   const listEl = document.getElementById('ratings-list');
   if (!ratings.length) {
     listEl.textContent = 'No reviews yet.';
@@ -117,5 +118,29 @@
         <small>${new Date(r.createdAt).toLocaleDateString()}</small>
       </div>
     `).join('');
+  }
+
+  // ——— 7) fetch & render this seller’s own listings + delete X ———
+  res = await fetch(`/api/listings/seller/${sellerId}`);
+  if (res.ok) {
+    const products = await res.json(); // should be an array
+    const el = document.getElementById('seller-listings');
+    el.innerHTML = products.map(p => `
+      <div class="seller-listing-item" data-id="${p.id}">
+        <img src="${p.image1}" alt="${p.product_name}" />
+        <button class="delete-btn">×</button>
+        <h4>${p.product_name}</h4>
+        <p>$${(+p.price).toFixed(2)}</p>
+      </div>
+    `).join('');
+    el.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const card = btn.closest('.seller-listing-item');
+        const id   = card.dataset.id;
+        const resp = await fetch(`/api/listings/${id}`, { method: 'DELETE' });
+        if (resp.ok) card.remove();
+        else         alert('Failed to delete listing');
+      });
+    });
   }
 })();

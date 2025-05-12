@@ -325,3 +325,36 @@ main {
 .ratings-header .ratings-info {
   margin-left: 0.5rem; 
 }
+
+.seller-listings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.seller-listing-item {
+  position: relative;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+}
+.seller-listing-item img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+.seller-listing-item .delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  line-height: 24px;
+  cursor: pointer;
+}
+.seller-listing-item h4 { margin: 0.5rem 0 0.25rem; }
+.seller-listing-item p  { margin: 0; font-size: 0.9rem; color: #555; }
