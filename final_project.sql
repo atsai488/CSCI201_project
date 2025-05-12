@@ -32,6 +32,7 @@ create table Messages (
     foreign key (SenderID) references Users(SID)
 );
 
+
 -- fk stands for foreign key not for.. y'know what
 create table Ratings (
   id int AUTO_INCREMENT primary key,

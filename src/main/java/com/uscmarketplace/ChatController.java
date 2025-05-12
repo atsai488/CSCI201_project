@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 
 @Controller
@@ -45,7 +46,11 @@ public class ChatController {
         public void setSenderId(int senderId) { this.senderId = senderId; }
         public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
     }
-
+    public static String formatTimestamp(long millis) {
+        Date date = new Date(millis);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(date);
+    }
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/publicmessages")
     public Message handleMessage(Message chatMessage) throws Exception {
@@ -58,6 +63,7 @@ public class ChatController {
                 ps.executeUpdate();
             }
         }
+        
         return chatMessage;
     }
 }
