@@ -5,8 +5,8 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class MessagingRedirect {
-    @GetMapping("/messaging")
+    @GetMapping("/messages")
     public String index() {
-        return "messaging";
+        return "messages";
     }
 }
