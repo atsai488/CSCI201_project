@@ -71,6 +71,9 @@ public class LoginServlet extends HttpServlet {
 			if(rs.next()) {
 				String passwordHash = rs.getString("password");
 				if(bc.matches(password, passwordHash)) {
+					// Set userId in session
+					Long userId = rs.getLong("SID");
+					request.getSession().setAttribute("userId", userId);
 					out.println("success");
 				}
 				else {
