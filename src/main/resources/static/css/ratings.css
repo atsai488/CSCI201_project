@@ -358,3 +358,8 @@ main {
 }
 .seller-listing-item h4 { margin: 0.5rem 0 0.25rem; }
 .seller-listing-item p  { margin: 0; font-size: 0.9rem; color: #555; }
+
+
+#your-listings-wrapper {
+  margin-left: 2rem;    
+}
